@@ -7,7 +7,7 @@ from mijiaAPI import mijiaLogin
 if not os.path.exists('jsons'):
     os.mkdir('jsons')
 
-# 此方法大概率需要手机验证码验证，建议优先使用二维码登录
+# Phương thức này có khả năng cao cần xác minh mã OTP điện thoại, khuyến nghị ưu tiên sử dụng đăng nhập mã QR
 
 username = os.getenv('XIAOMI_USERNAME')
 password = os.getenv('XIAOMI_PASSWORD')

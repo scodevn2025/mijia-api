@@ -10,20 +10,20 @@ with open('jsons/devices.json') as f:
     devices = json.load(f)
     did = devices[2]['did']
 api = mijiaAPI(auth)
-# 参考 https://iot.mi.com/new/doc/accesses/direct-access/extension-development/extension-functions/statistical-interface
+# Tham khảo https://iot.mi.com/new/doc/accesses/direct-access/extension-development/extension-functions/statistical-interface
 ret = api.get_statistics({
     "did": did,
-    "key": "7.1",                 # siid.piid，这里的7.1表示 lumi.acpartner.mcn04 的 power-consumption
-    "data_type": "stat_month_v3", # 按月统计，可选：时（stat_hour_v3）、天（stat_day_v3）、星期（stat_week_v3）、月（stat_month_v3）
-    "limit": 24,                  # 返回的最大条目数
+    "key": "7.1",                 # siid.piid, ở đây 7.1 biểu thị power-consumption của lumi.acpartner.mcn04
+    "data_type": "stat_month_v3", # Thống kê theo tháng, tùy chọn: giờ (stat_hour_v3), ngày (stat_day_v3), tuần (stat_week_v3), tháng (stat_month_v3)
+    "limit": 24,                  # Số mục tối đa trả về
     "time_start": 1685548800,     # 2023-06-01 00:00:00
     "time_end": 1750694400,       # 2025-06-24 00:00:00
 })
 """
-已知问题：
-比较旧的设备使用的API会不一样，需要将`data_type`中的`_v3`去掉。
-并且`key`也不一样，比如米家空调伴侣2的统计耗电量的`key`为`powerCost`。
-详见 https://github.com/Do1e/mijia-api/issues/46
+Vấn đề đã biết:
+Các thiết bị cũ hơn sử dụng API khác, cần bỏ `_v3` trong `data_type`.
+Và `key` cũng khác, ví dụ như key thống kê tiêu thụ điện của Mijia Air Conditioner Companion 2 là `powerCost`.
+Xem chi tiết https://github.com/Do1e/mijia-api/issues/46
 """
 
 for item in ret:

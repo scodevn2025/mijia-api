@@ -14,19 +14,19 @@ logger = get_logger(__name__)
 class DevProp(object):
     def __init__(self, prop_dict: dict):
         """
-        初始化属性对象。
+        Khởi tạo đối tượng thuộc tính.
 
         Args:
-            prop_dict (dict): 属性字典。
+            prop_dict (dict): Dictionary thuộc tính.
 
         Raises:
-            ValueError: 如果属性类型不受支持。
+            ValueError: Nếu loại thuộc tính không được hỗ trợ.
         """
         self.name = prop_dict['name']
         self.desc = prop_dict['description']
         self.type = prop_dict['type']
         if self.type not in ['bool', 'int', 'uint', 'float', 'string']:
-            raise ValueError(f'不支持的类型: {self.type}, 可选类型: bool, int, uint, float, string')
+            raise ValueError(f'Loại không được hỗ trợ: {self.type}, các loại có thể chọn: bool, int, uint, float, string')
         self.rw = prop_dict['rw']
         self.unit = prop_dict['unit']
         self.range = prop_dict['range']
@@ -35,10 +35,10 @@ class DevProp(object):
 
     def __str__(self):
         """
-        返回属性的字符串表示。
+        Trả về biểu diễn chuỗi của thuộc tính.
 
         Returns:
-            str: 属性的名称、描述、类型、读写权限、单位和范围。
+            str: Tên, mô tả, loại, quyền đọc/ghi, đơn vị và phạm vi của thuộc tính.
         """
         lines = [
             f"  {self.name}: {self.desc}",
@@ -55,10 +55,10 @@ class DevProp(object):
 class DevAction(object):
     def __init__(self, act_dict: dict):
         """
-        初始化动作对象。
+        Khởi tạo đối tượng hành động.
 
         Args:
-            act_dict (dict): 动作字典。
+            act_dict (dict): Dictionary hành động.
         """
         self.name = act_dict['name']
         self.desc = act_dict['description']
@@ -84,40 +84,40 @@ class mijiaDevice(object):
             sleep_time: Optional[Union[int, float]] = 0.5
     ):
         """
-        初始化设备对象。
+        Khởi tạo đối tượng thiết bị.
 
-        如果未提供设备信息，则根据设备名称获取设备信息。如果两者均未提供，则抛出异常。
-        如果同时提供了设备信息和设备名称，则以设备信息为准。
+        Nếu không cung cấp thông tin thiết bị, sẽ lấy thông tin thiết bị dựa trên tên thiết bị. Nếu cả hai đều không được cung cấp, sẽ ném ngoại lệ.
+        Nếu cung cấp cả thông tin thiết bị và tên thiết bị, sẽ ưu tiên thông tin thiết bị.
 
         Args:
-            api (mijiaAPI): 米家API对象。
-            dev_info (dict, optional): 设备信息字典，从get_device_info获取。默认为None。
-            dev_name (str, optional): 设备名称，从get_devices_list获取。默认为None。
-            did (str, optional): 设备ID，如未指定，则需要在调用get/set时指定。默认为None。
-            sleep_time ([int, float], optional): 调用设备属性的间隔时间。默认为0.5秒。
+            api (mijiaAPI): Đối tượng Mijia API.
+            dev_info (dict, optional): Dictionary thông tin thiết bị, lấy từ get_device_info. Mặc định là None.
+            dev_name (str, optional): Tên thiết bị, lấy từ get_devices_list. Mặc định là None.
+            did (str, optional): ID thiết bị, nếu không chỉ định, cần chỉ định khi gọi get/set. Mặc định là None.
+            sleep_time ([int, float], optional): Thời gian khoảng cách gọi thuộc tính thiết bị. Mặc định là 0.5 giây.
 
         Raises:
-            RuntimeError: 如果dev_info和dev_name都未提供。
-            ValueError: 如果找不到指定设备或找到多个同名设备。
+            RuntimeError: Nếu cả dev_info và dev_name đều không được cung cấp.
+            ValueError: Nếu không tìm thấy thiết bị được chỉ định hoặc tìm thấy nhiều thiết bị cùng tên.
 
         Note:
-            - 如果同时提供了dev_info和dev_name，则以dev_info为准。
-            - 如果只提供了dev_name，则根据名称自动获取设备信息。
-            - 如果只提供了dev_info，则直接使用该信息。
+            - Nếu cung cấp cả dev_info và dev_name, sẽ ưu tiên dev_info.
+            - Nếu chỉ cung cấp dev_name, sẽ tự động lấy thông tin thiết bị dựa trên tên.
+            - Nếu chỉ cung cấp dev_info, sẽ sử dụng trực tiếp thông tin đó.
         """
         if dev_info is None and dev_name is None:
-            raise RuntimeError("必须提供 'dev_info' 或 'dev_name' 中的一个参数。")
+            raise RuntimeError("Phải cung cấp một trong các tham số 'dev_info' hoặc 'dev_name'.")
         if dev_info is not None and dev_name is not None:
-            logger.warning("同时提供了 'dev_info' 和 'dev_name'。将使用 'dev_info' 进行初始化。")
+            logger.warning("Đã cung cấp cả 'dev_info' và 'dev_name'. Sẽ sử dụng 'dev_info' để khởi tạo.")
 
         self.api = api
         if dev_info is None:
             devices_list = self.api.get_devices_list()
             matches = [device for device in devices_list if device['name'] == dev_name]
             if not matches:
-                raise ValueError(f"未找到设备 {dev_name}")
+                raise ValueError(f"Không tìm thấy thiết bị {dev_name}")
             elif len(matches) > 1:
-                raise ValueError(f"找到多个名为 {dev_name} 的设备")
+                raise ValueError(f"Tìm thấy nhiều thiết bị có tên {dev_name}")
             else:
                 dev_info = get_device_info(matches[0]['model'])
                 did = matches[0]['did']

@@ -20,11 +20,11 @@ logger = get_logger(__name__)
 class LoginError(Exception):
     def __init__(self, code: int, message: str):
         """
-        初始化登录错误异常。
+        Khởi tạo ngoại lệ lỗi đăng nhập.
 
         Args:
-            code (int): 错误代码。
-            message (str): 错误消息。
+            code (int): Mã lỗi.
+            message (str): Thông báo lỗi.
         """
         self.code = code
         self.message = message
@@ -34,10 +34,10 @@ class LoginError(Exception):
 class mijiaLogin(object):
     def __init__(self, save_path: Optional[str] = None):
         """
-        初始化米家登录对象。
+        Khởi tạo đối tượng đăng nhập Mijia.
 
         Args:
-            save_path (str, optional): 认证数据保存路径。默认为None。
+            save_path (str, optional): Đường dẫn lưu dữ liệu xác thực. Mặc định là None.
         """
         self.auth_data = None
         self.save_path = save_path
@@ -140,25 +140,25 @@ class mijiaLogin(object):
                 os.makedirs(os.path.dirname(self.save_path))
             with open(self.save_path, 'w') as f:
                 json.dump(self.auth_data, f, indent=2)
-            logger.info(f'认证文件已保存到 [{self.save_path}]')
+            logger.info(f'Tệp xác thực đã được lưu tại [{self.save_path}]')
         else:
-            logger.info('认证文件未保存')
+            logger.info('Tệp xác thực chưa được lưu')
 
     def login(self, username: str, password: str) -> dict:
         """
-        使用用户名和密码登录。
+        Đăng nhập bằng tên người dùng và mật khẩu.
 
         Args:
-            username (str): 小米账户用户名（邮箱/手机号/小米ID）。
-            password (str): 小米账户密码。
+            username (str): Tên người dùng tài khoản Xiaomi (email/số điện thoại/Xiaomi ID).
+            password (str): Mật khẩu tài khoản Xiaomi.
 
         Returns:
-            dict: 授权数据，包含userId、ssecurity、deviceId和serviceToken。
+            dict: Dữ liệu ủy quyền, bao gồm userId, ssecurity, deviceId và serviceToken.
 
         Raises:
-            LoginError: 登录失败时抛出。
+            LoginError: Được ném ra khi đăng nhập thất bại.
         """
-        logger.warning('使用账号密码登录很可能需要验证码。请尝试使用 `QRlogin` 方法。')
+        logger.warning('Đăng nhập bằng tài khoản mật khẩu rất có thể cần mã xác minh. Vui lòng thử sử dụng phương thức `QRlogin`.')
         data = self._get_index()
         post_data = {
             'qs': data['qs'],
@@ -206,7 +206,7 @@ class mijiaLogin(object):
             loginurl (str): 包含登录信息的URL。
             box_size (int, optional): 二维码大小。默认为10。
         """
-        logger.info('请使用米家APP扫描下方二维码')
+        logger.info('Vui lòng sử dụng ứng dụng Mijia để quét mã QR dưới đây')
         qr = QRCode(border=1, box_size=box_size)
         qr.add_data(loginurl)
         qr.make_image().save('qr.png')
@@ -214,20 +214,20 @@ class mijiaLogin(object):
             qr.print_ascii(invert=True, tty=True)
         except OSError:
             qr.print_ascii(invert=True, tty=False)
-            logger.info('如果无法扫描二维码，'
-                        '请更改终端字体，'
-                        '如"Maple Mono"、"Fira Code"等。\n'
-                        '或者直接使用当前目录下的qr.png文件。')
+            logger.info('Nếu không thể quét mã QR, '
+                        'vui lòng thay đổi font terminal, '
+                        'như "Maple Mono", "Fira Code", v.v.\n'
+                        'Hoặc sử dụng trực tiếp tệp qr.png trong thư mục hiện tại.')
 
     def QRlogin(self) -> dict:
         """
-        使用二维码登录。
+        Đăng nhập bằng mã QR.
 
         Returns:
-            dict: 授权数据，包含userId、ssecurity、deviceId和serviceToken。
+            dict: Dữ liệu ủy quyền, bao gồm userId, ssecurity, deviceId và serviceToken.
 
         Raises:
-            LoginError: 登录失败时抛出。
+            LoginError: Được ném ra khi đăng nhập thất bại.
         """
         data = self._get_index()
         location = data['location']

@@ -11,16 +11,16 @@ from .utils import post_data
 class mijiaAPI(object):
     def __init__(self, auth_data: dict):
         """
-        初始化mijiaAPI对象。
+        Khởi tạo đối tượng mijiaAPI.
 
         Args:
-            auth_data (dict): 包含授权信息的字典，必须包含'userId'、'deviceId'、'ssecurity'和'serviceToken'。
+            auth_data (dict): Từ điển chứa thông tin ủy quyền, phải bao gồm 'userId', 'deviceId', 'ssecurity' và 'serviceToken'.
 
         Raises:
-            Exception: 当授权数据不完整时抛出异常。
+            Exception: Ném ra ngoại lệ khi dữ liệu ủy quyền không đầy đủ.
         """
         if any(k not in auth_data for k in ['userId', 'deviceId', 'ssecurity', 'serviceToken']):
-            raise Exception('授权数据无效')
+            raise Exception('Dữ liệu ủy quyền không hợp lệ')
         self.userId = auth_data['userId']
         self.ssecurity = auth_data['ssecurity']
         self.session = requests.Session()
@@ -36,16 +36,16 @@ class mijiaAPI(object):
     @staticmethod
     def _post_process(data: dict) -> Union[list, bool]:
         if data['code'] != 0:
-            raise Exception(f'获取数据失败, {data["message"]}')
+            raise Exception(f'Lấy dữ liệu thất bại, {data["message"]}')
         return data['result']
 
     @property
     def available(self) -> bool:
         """
-        检查API是否可用。
+        Kiểm tra API có khả dụng hay không.
 
         Returns:
-            bool: API可用返回True，否则返回False。
+            bool: API khả dụng trả về True, ngược lại trả về False.
         """
         if self.expireTime:
             expire_time = datetime.strptime(self.expireTime, '%Y-%m-%d %H:%M:%S')
@@ -56,10 +56,10 @@ class mijiaAPI(object):
 
     def get_devices_list(self) -> list:
         """
-        获取设备列表。
+        Lấy danh sách thiết bị.
 
         Returns:
-            dict: 设备列表。
+            dict: Danh sách thiết bị.
         """
         uri = '/home/home_device_list'
         home_list = self.get_homes_list()
@@ -89,10 +89,10 @@ class mijiaAPI(object):
 
     def get_homes_list(self) -> list:
         """
-        获取家庭列表。
+        Lấy danh sách nhà.
 
         Returns:
-            list: 家庭列表，包括房间信息。
+            list: Danh sách nhà, bao gồm thông tin phòng.
         """
         uri = '/v2/homeroom/gethome_merged'
         data = {"fg": True, "fetch_share": True, "fetch_share_dev": True, "limit": 300, "app_ver": 7}
@@ -100,15 +100,15 @@ class mijiaAPI(object):
 
     def get_scenes_list(self, home_id: str) -> list:
         """
-        获取场景列表。
+        Lấy danh sách cảnh.
 
-        在米家APP中通过"添加 -> 手动控制"设置。
+        Được thiết lập trong ứng dụng Mijia qua "Thêm -> Điều khiển thủ công".
 
         Args:
-            home_id (str): 家庭ID，从get_homes_list获取。
+            home_id (str): ID nhà, lấy từ get_homes_list.
 
         Returns:
-            list: 场景列表。
+            list: Danh sách cảnh.
         """
         uri = '/appgateway/miot/appsceneservice/AppSceneService/GetSceneList'
         data = {"home_id": home_id}

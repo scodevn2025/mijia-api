@@ -154,32 +154,32 @@ class mijiaDevice(object):
 
     def set(self, name: str, value: Union[bool, int, float, str], did: Optional[str] = None) -> bool:
         """
-        设置设备的属性值。
+        Thiết lập giá trị thuộc tính của thiết bị.
 
         Args:
-            name (str): 属性名称。
-            value (Union[bool, int, float, str]): 属性值。
-            did (str, optional): 设备ID。如未指定，则使用实例化时的did。默认为None。
+            name (str): Tên thuộc tính.
+            value (Union[bool, int, float, str]): Giá trị thuộc tính.
+            did (str, optional): ID thiết bị. Nếu không chỉ định, sẽ sử dụng did khi khởi tạo. Mặc định là None.
 
         Returns:
-            bool: 执行结果（True/False）。
+            bool: Kết quả thực hiện (True/False).
 
         Raises:
-            ValueError: 如果属性不存在、属性为只读或值无效。
-            RuntimeError: 如果设置属性失败。
+            ValueError: Nếu thuộc tính không tồn tại, thuộc tính chỉ đọc hoặc giá trị không hợp lệ.
+            RuntimeError: Nếu thiết lập thuộc tính thất bại.
         """
         if did is None:
             did = self.did
         if did is None:
-            raise ValueError('请指定设备ID (did)')
+            raise ValueError('Vui lòng chỉ định ID thiết bị (did)')
         if name not in self.prop_list:
-            raise ValueError(f'不支持的属性: {name}, 可用属性: {list(self.prop_list.keys())}')
+            raise ValueError(f'Thuộc tính không được hỗ trợ: {name}, thuộc tính có sẵn: {list(self.prop_list.keys())}')
         prop = self.prop_list[name]
         if 'w' not in prop.rw:
-            raise ValueError(f'属性 {name} 不可写入')
+            raise ValueError(f'Thuộc tính {name} không thể ghi')
         if prop.value_list:
             if value not in [item['value'] for item in prop.value_list]:
-                raise ValueError(f'无效值: {value}, 请使用 {prop.value_list}')
+                raise ValueError(f'Giá trị không hợp lệ: {value}, vui lòng sử dụng {prop.value_list}')
         if prop.type == 'bool':
             if isinstance(value, str):
                 if value.lower() == 'true':
@@ -189,116 +189,116 @@ class mijiaDevice(object):
                 elif value in ['0', '1']:
                     value = bool(int(value))
                 else:
-                    raise ValueError(f'无效布尔值: {value}')
+                    raise ValueError(f'Giá trị boolean không hợp lệ: {value}')
             elif isinstance(value, int):
                 if value == 0:
                     value = False
                 elif value == 1:
                     value = True
                 else:
-                    raise ValueError(f'无效布尔值: {value}')
+                    raise ValueError(f'Giá trị boolean không hợp lệ: {value}')
             elif not isinstance(value, bool):
-                raise ValueError(f'无效布尔值: {value}')
+                raise ValueError(f'Giá trị boolean không hợp lệ: {value}')
         elif prop.type in ['int', 'uint']:
             value = int(value)
             if prop.range:
                 if value < prop.range[0] or value > prop.range[1]:
-                    raise ValueError(f'{value} 超出数值范围, 应该在 {prop.range[:2]} 之间')
+                    raise ValueError(f'{value} vượt quá phạm vi số, phải nằm trong khoảng {prop.range[:2]}')
                 if len(prop.range) >= 3 and prop.range[2] != 1:
                     if (value - prop.range[0]) % prop.range[2] != 0:
                         raise ValueError(
-                            f'无效的值: {value}, 应该在范围 {prop.range[:2]} 内且步长为 {prop.range[2]}')
+                            f'Giá trị không hợp lệ: {value}, phải nằm trong phạm vi {prop.range[:2]} và có bước nhảy {prop.range[2]}')
         elif prop.type == 'float':
             value = float(value)
             if prop.range:
                 if value < prop.range[0] or value > prop.range[1]:
-                    raise ValueError(f'{value} 超出数值范围, 应该在 {prop.range[:2]} 之间')
+                    raise ValueError(f'{value} vượt quá phạm vi số, phải nằm trong khoảng {prop.range[:2]}')
                 if len(prop.range) >= 3 and isinstance(prop.range[2], int):
                     if int(value - prop.range[0]) % prop.range[2] != 0:
                         raise ValueError(
-                            f'无效的值: {value}, 应该在范围 {prop.range[:2]} 内且步长为 {prop.range[2]}')
+                            f'Giá trị không hợp lệ: {value}, phải nằm trong phạm vi {prop.range[:2]} và có bước nhảy {prop.range[2]}')
         elif prop.type == 'string':
             if not isinstance(value, str):
-                raise ValueError(f'无效字符串值: {value}')
+                raise ValueError(f'Giá trị chuỗi không hợp lệ: {value}')
         else:
-            raise ValueError(f'不支持的类型: {prop.type}, 可用类型: bool, int, uint, float, string')
+            raise ValueError(f'Loại không được hỗ trợ: {prop.type}, loại có thể sử dụng: bool, int, uint, float, string')
         method = prop.method.copy()
         method['did'] = did
         method['value'] = value
         result = self.api.set_devices_prop([method])[0]
         if result['code'] != 0:
             raise RuntimeError(
-                f"设置属性 {name} 失败, "
-                f"错误码: {result['code']}, "
-                f"错误信息: {ERROR_CODE.get(str(result['code']), '未知错误')}"
+                f"Thiết lập thuộc tính {name} thất bại, "
+                f"mã lỗi: {result['code']}, "
+                f"thông báo lỗi: {ERROR_CODE.get(str(result['code']), 'lỗi không xác định')}"
             )
         sleep(self.sleep_time)
-        logger.debug(f"设置属性: {self.name} -> {name}, 值: {value}, 结果: {result}")
+        logger.debug(f"Thiết lập thuộc tính: {self.name} -> {name}, giá trị: {value}, kết quả: {result}")
         return result['code'] == 0
 
     def get(self, name: str, did: Optional[str] = None) -> Union[bool, int, float, str]:
         """
-        获取设备的属性值。
+        Lấy giá trị thuộc tính của thiết bị.
 
         Args:
-            name (str): 属性名称。
-            did (str, optional): 设备ID。如未指定，则使用实例化时的did。默认为None。
+            name (str): Tên thuộc tính.
+            did (str, optional): ID thiết bị. Nếu không chỉ định, sẽ sử dụng did khi khởi tạo. Mặc định là None.
 
         Returns:
-            Union[bool, int, float, str]: 属性值。
+            Union[bool, int, float, str]: Giá trị thuộc tính.
 
         Raises:
-            ValueError: 如果未指定设备ID、属性不存在或属性为只写。
-            RuntimeError: 如果获取属性失败。
+            ValueError: Nếu không chỉ định ID thiết bị, thuộc tính không tồn tại hoặc thuộc tính chỉ ghi.
+            RuntimeError: Nếu lấy thuộc tính thất bại.
         """
         if did is None:
             did = self.did
         if did is None:
-            raise ValueError('请指定设备ID (did)')
+            raise ValueError('Vui lòng chỉ định ID thiết bị (did)')
         if name not in self.prop_list:
-            raise ValueError(f'不支持的属性: {name}, 可用属性: {list(self.prop_list.keys())}')
+            raise ValueError(f'Thuộc tính không được hỗ trợ: {name}, thuộc tính có sẵn: {list(self.prop_list.keys())}')
         prop = self.prop_list[name]
         if 'r' not in prop.rw:
-            raise ValueError(f'属性 {name} 不可读取')
+            raise ValueError(f'Thuộc tính {name} không thể đọc')
         method = prop.method.copy()
         method['did'] = did
         result = self.api.get_devices_prop([method])[0]
         if result['code'] != 0:
             raise RuntimeError(
-                f"获取属性 {name} 失败, "
-                f"错误码: {result['code']}, "
-                f"错误信息: {ERROR_CODE.get(str(result['code']), '未知错误')}"
+                f"Lấy thuộc tính {name} thất bại, "
+                f"mã lỗi: {result['code']}, "
+                f"thông báo lỗi: {ERROR_CODE.get(str(result['code']), 'lỗi không xác định')}"
             )
         sleep(self.sleep_time)
-        logger.debug(f"获取属性: {self.name} -> {name}, 结果: {result}")
+        logger.debug(f"Lấy thuộc tính: {self.name} -> {name}, kết quả: {result}")
         return result['value']
 
     def __setattr__(self, name: str, value: Union[bool, int, float, str]) -> None:
         """
-        设置设备的属性值（通过对象属性方式，需在实例化时指定did）。
+        Thiết lập giá trị thuộc tính của thiết bị (thông qua phương thức thuộc tính đối tượng, cần chỉ định did khi khởi tạo).
 
         Args:
-            name (str): 属性名称。
-            value (Union[bool, int, float, str]): 属性值。
+            name (str): Tên thuộc tính.
+            value (Union[bool, int, float, str]): Giá trị thuộc tính.
 
         Raises:
-            RuntimeError: 如果设置属性失败。
+            RuntimeError: Nếu thiết lập thuộc tính thất bại.
         """
         if 'prop_list' in self.__dict__ and name in self.prop_list:
             if not self.set(name, value):
-                raise RuntimeError(f'设置属性 {name} 失败')
+                raise RuntimeError(f'Thiết lập thuộc tính {name} thất bại')
         else:
             super().__setattr__(name, value)
 
     def __getattr__(self, name: str) -> Union[bool, int, float, str]:
         """
-        获取设备的属性值（通过对象属性方式，需在实例化时指定did）。
+        Lấy giá trị thuộc tính của thiết bị (thông qua phương thức thuộc tính đối tượng, cần chỉ định did khi khởi tạo).
 
         Args:
-            name (str): 属性名称。
+            name (str): Tên thuộc tính.
 
         Returns:
-            Union[bool, int, float, str]: 属性值。
+            Union[bool, int, float, str]: Giá trị thuộc tính.
         """
         if 'prop_list' in self.__dict__ and name in self.prop_list:
             return self.get(name)
@@ -313,27 +313,27 @@ class mijiaDevice(object):
             **kwargs
     ) -> bool:
         """
-        运行设备动作。
+        Chạy hành động thiết bị.
 
         Args:
-            name (str): 动作名称。
-            did (Optional[str], optional): 设备ID。如未指定，则使用实例化时的did。默认为None。
-            value (Optional[Union[list, tuple]], optional): 动作参数。如动作不需要参数，则不需指定。默认为None。
-            **kwargs: 其它动作参数，如智能音箱的in参数[run_action('execute-text-directive', _in=['空调调至26度', True])]。
+            name (str): Tên hành động.
+            did (Optional[str], optional): ID thiết bị. Nếu không chỉ định, sẽ sử dụng did khi khởi tạo. Mặc định là None.
+            value (Optional[Union[list, tuple]], optional): Tham số hành động. Nếu hành động không cần tham số, thì không cần chỉ định. Mặc định là None.
+            **kwargs: Các tham số hành động khác, như tham số in của loa thông minh [run_action('execute-text-directive', _in=['Điều hòa 26 độ', True])].
 
         Returns:
-            bool: 执行结果（True/False）。
+            bool: Kết quả thực hiện (True/False).
 
         Raises:
-            ValueError: 如果未指定设备ID、动作不存在或参数无效。
-            RuntimeError: 如果运行动作失败。
+            ValueError: Nếu không chỉ định ID thiết bị, hành động không tồn tại hoặc tham số không hợp lệ.
+            RuntimeError: Nếu chạy hành động thất bại.
         """
         if did is None:
             did = self.did
         if did is None:
-            raise ValueError('请指定设备ID (did)')
+            raise ValueError('Vui lòng chỉ định ID thiết bị (did)')
         if name not in self.action_list:
-            raise ValueError(f'不支持的动作: {name}, 可用动作: {list(self.action_list.keys())}')
+            raise ValueError(f'Hành động không được hỗ trợ: {name}, hành động có sẵn: {list(self.action_list.keys())}')
         act = self.action_list[name]
         method = act.method.copy()
         method['did'] = did
@@ -344,33 +344,33 @@ class mijiaDevice(object):
                 if k.startswith("_"):
                     k = k[1:]
                 if k in method:
-                    raise ValueError(f'无效的参数: {k}. 请勿使用以下参数 ({", ".join(method.keys())})')
+                    raise ValueError(f'Tham số không hợp lệ: {k}. Vui lòng không sử dụng các tham số sau ({", ".join(method.keys())})')
                 method[k] = v
         result = self.api.run_action(method)
         if result['code'] != 0:
             raise RuntimeError(
-                f"执行动作 {name} 失败, "
-                f"错误码: {result['code']}, "
-                f"错误信息: {ERROR_CODE.get(str(result['code']), '未知错误')}"
+                f"Thực hiện hành động {name} thất bại, "
+                f"mã lỗi: {result['code']}, "
+                f"thông báo lỗi: {ERROR_CODE.get(str(result['code']), 'lỗi không xác định')}"
             )
         sleep(self.sleep_time)
-        logger.debug(f"执行动作: {self.name} -> {name}, 结果: {result}")
+        logger.debug(f"Thực hiện hành động: {self.name} -> {name}, kết quả: {result}")
         return result['code'] == 0
 
 
 def get_device_info(device_model: str, cache_path: Optional[str] = os.path.join(os.path.expanduser("~"), ".config/mijia-api")) -> dict:
     """
-    获取设备信息，用于初始化mijiaDevice对象。
+    Lấy thông tin thiết bị, dùng để khởi tạo đối tượng mijiaDevice.
 
     Args:
-        device_model (str): 设备型号，从get_devices_list获取。
-        cache_path (str, optional): 缓存文件路径。默认为~/.config/mijia-api，设置为None则不使用缓存。
+        device_model (str): Model thiết bị, lấy từ get_devices_list.
+        cache_path (str, optional): Đường dẫn file cache. Mặc định là ~/.config/mijia-api, thiết lập None thì không sử dụng cache.
 
     Returns:
-        dict: 设备信息字典。
+        dict: Từ điển thông tin thiết bị.
 
     Raises:
-        RuntimeError: 如果获取设备信息失败。
+        RuntimeError: Nếu lấy thông tin thiết bị thất bại.
     """
     if cache_path is not None:
         cache_file = os.path.join(cache_path, f'{device_model}.json')
@@ -379,10 +379,10 @@ def get_device_info(device_model: str, cache_path: Optional[str] = os.path.join(
                 return json.load(f)
     response = requests.get(deviceURL + device_model)
     if response.status_code != 200:
-        raise RuntimeError(f'获取设备信息失败')
+        raise RuntimeError(f'Lấy thông tin thiết bị thất bại')
     content = re.search(r'data-page="(.*?)">', response.text)
     if content is None:
-        raise RuntimeError(f'获取设备信息失败')
+        raise RuntimeError(f'Lấy thông tin thiết bị thất bại')
     content = content.group(1)
     content = json.loads(content.replace('&quot;', '"'))
 

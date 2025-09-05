@@ -1,71 +1,71 @@
 ---
 name: Bug report
-about: 提交一个遇到的bug
+about: Báo cáo lỗi gặp phải
 title: "[BUG]"
 labels: bug
 assignees: ''
 
 ---
 
-# Bug报告指南
+# Hướng dẫn báo cáo Bug
 
-感谢使用mijia-api！如果您遇到了任何问题或发现了错误，请按照以下格式提交您的Bug报告。这将帮助我们更快地定位并解决问题。
+Cảm ơn bạn đã sử dụng mijia-api! Nếu bạn gặp phải bất kỳ vấn đề nào hoặc phát hiện lỗi, vui lòng gửi báo cáo Bug theo định dạng sau. Điều này sẽ giúp chúng tôi xác định và giải quyết vấn đề nhanh chóng hơn.
 
-## 如何提交一个有效的Bug报告
+## Cách gửi báo cáo Bug hiệu quả
 
-1. **确保这是一个Bug**：请先查阅[已知问题](https://github.com/Do1e/mijia-api/issues?q=is%3Aissue%20label%3Awontfix)，确认您的问题不是已知的问题或是配置不当造成的。
-2. **尝试重现问题**：在不同的环境或条件下尝试重现此问题，以确定是否总是发生。
-3. **搜索现有问题**：查看现有的[Issue列表](https://github.com/Do1e/mijia-api/issues)，确认这个问题还没有被报告过。
-4. **提供详细信息**：
-   - 您的操作系统和版本。
-   - Python版本。
-   - 项目的版本号。
-   - 出现问题的具体步骤。
-   - 实际行为与预期行为之间的差异。
-   - 如果可能的话，附上相关的日志输出或截图。
+1. **Đảm bảo đây là một Bug**: Vui lòng xem trước [các vấn đề đã biết](https://github.com/Do1e/mijia-api/issues?q=is%3Aissue%20label%3Awontfix), xác nhận vấn đề của bạn không phải là vấn đề đã biết hoặc do cấu hình không đúng.
+2. **Thử tái tạo vấn đề**: Thử tái tạo vấn đề này trong các môi trường hoặc điều kiện khác nhau để xác định xem nó có luôn xảy ra hay không.
+3. **Tìm kiếm các vấn đề hiện có**: Xem [danh sách Issue hiện có](https://github.com/Do1e/mijia-api/issues), xác nhận vấn đề này chưa được báo cáo.
+4. **Cung cấp thông tin chi tiết**:
+   - Hệ điều hành và phiên bản của bạn.
+   - Phiên bản Python.
+   - Số phiên bản của dự án.
+   - Các bước cụ thể dẫn đến vấn đề.
+   - Sự khác biệt giữa hành vi thực tế và hành vi mong đợi.
+   - Nếu có thể, đính kèm đầu ra log liên quan hoặc ảnh chụp màn hình.
 
-## 报告模板
+## Mẫu báo cáo
 
-### 基本信息
+### Thông tin cơ bản
 
-- **操作系统**: [例如: Windows 10, macOS Big Sur, Ubuntu 20.04]
-- **Python版本**: [例如: 3.8.5]
-- **项目版本**: [例如: 1.0.0]
+- **Hệ điều hành**: [ví dụ: Windows 10, macOS Big Sur, Ubuntu 20.04]
+- **Phiên bản Python**: [ví dụ: 3.8.5]
+- **Phiên bản dự án**: [ví dụ: 1.0.0]
 
-### 描述问题
+### Mô tả vấn đề
 
-<!-- 简短描述遇到的问题是什么。 -->
+<!-- Mô tả ngắn gọn vấn đề gặp phải là gì. -->
 
-#### 步骤到复现
+#### Các bước để tái tạo
 <!--
-1. 第一步...
-2. 第二步...
-3. 等等...
+1. Bước đầu tiên...
+2. Bước thứ hai...
+3. Vân vân...
 -->
 
-#### 实际结果
+#### Kết quả thực tế
 <!--
-这里写实际发生了什么。
+Viết những gì thực sự đã xảy ra ở đây.
 -->
 
 
-#### 预期结果
+#### Kết quả mong đợi
 <!--
-这里写你期望看到的结果是什么样的。
+Viết kết quả bạn mong muốn thấy ở đây.
 -->
 
-### 报错堆栈
+### Stack trace lỗi
 <!--
-复制并在这里粘贴Python的完整报错堆栈。
+Sao chép và dán đầy đủ stack trace lỗi Python ở đây.
 -->
 
-### 附加信息
+### Thông tin bổ sung
 <!--
-如果有更多的上下文可以帮助我们理解问题所在，请在这里添加。比如错误消息、堆栈跟踪等。
+Nếu có thêm ngữ cảnh nào có thể giúp chúng tôi hiểu vấn đề, vui lòng thêm ở đây. Ví dụ như thông báo lỗi, stack trace, v.v.
 -->
 
 
 
 ---
 
-再次感谢您的贡献！通过您的帮助，我们可以让这个项目变得更好。
+Cảm ơn một lần nữa cho sự đóng góp của bạn! Nhờ sự giúp đỡ của bạn, chúng tôi có thể làm cho dự án này tốt hơn.

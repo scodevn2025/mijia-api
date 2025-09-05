@@ -237,19 +237,20 @@ mijiaAPI --get_device_info DEVICE_MODEL # 获取设备信息，指定设备model
 mijiaAPI get --dev_name DEV_NAME --prop_name PROP_NAME # 获取设备属性
 mijiaAPI set --dev_name DEV_NAME --prop_name PROP_NAME --value VALUE # 设置设备属性
 mijiaAPI --run 明天天气如何
-mijiaAPI --run 打开台灯并将亮度调至最大 --quiet
+mijiaAPI --run Thời tiết ngày mai như thế nào
+mijiaAPI --run Bật đèn bàn và điều chỉnh độ sáng tối đa --quiet
 ```
 
-## 致谢
+## Lời cảm ơn
 
 * [janzlan/mijia-api](https://gitee.com/janzlan/mijia-api/tree/master)
 
-## 开源许可
+## Giấy phép mã nguồn mở
 
-本项目采用 [GPL-3.0](LICENSE) 开源许可证。
+Dự án này sử dụng giấy phép mã nguồn mở [GPL-3.0](LICENSE).
 
-## 免责声明
+## Tuyên bố miễn trách nhiệm
 
-* 本项目仅供学习交流使用，不得用于商业用途，如有侵权请联系删除
-* 用户使用本项目所产生的任何后果，需自行承担风险
-* 开发者不对使用本项目产生的任何直接或间接损失负责
+* Dự án này chỉ dành cho mục đích học tập và trao đổi, không được sử dụng cho mục đích thương mại, nếu có vi phạm bản quyền vui lòng liên hệ để xóa
+* Bất kỳ hậu quả nào phát sinh từ việc người dùng sử dụng dự án này, người dùng cần tự chịu rủi ro
+* Nhà phát triển không chịu trách nhiệm về bất kỳ thiệt hại trực tiếp hoặc gián tiếp nào phát sinh từ việc sử dụng dự án này

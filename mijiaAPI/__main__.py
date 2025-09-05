@@ -16,110 +16,110 @@ def parse_args(args):
         '-p', '--auth_path',
         type=str,
         default=os.path.join(os.path.expanduser("~"), ".config/mijia-api", "mijia-api-auth.json"),
-        help="认证文件保存路径，默认保存在~/.config/mijia-api/mijia-api-auth.json",
+        help="Đường dẫn lưu file xác thực, mặc định lưu tại ~/.config/mijia-api/mijia-api-auth.json",
     )
     parser.add_argument(
         '-l', '--list_devices',
         action='store_true',
-        help="列出所有米家设备",
+        help="Liệt kê tất cả thiết bị Mijia",
     )
     parser.add_argument(
         '--list_homes',
         action='store_true',
-        help="列出家庭列表",
+        help="Liệt kê danh sách nhà",
     )
     parser.add_argument(
         '--list_scenes',
         action='store_true',
-        help="列出场景列表",
+        help="Liệt kê danh sách cảnh",
     )
     parser.add_argument(
         '--list_consumable_items',
         action='store_true',
-        help="列出耗材列表",
+        help="Liệt kê danh sách vật tư tiêu hao",
     )
     parser.add_argument(
         '--run_scene',
         type=str,
-        help="运行场景，指定场景ID或名称",
+        help="Chạy cảnh, chỉ định ID cảnh hoặc tên cảnh",
         nargs='+',
         metavar='SCENE_ID/SCENE_NAME',
     )
     parser.add_argument(
         '--get_device_info',
         type=str,
-        help="获取设备信息，指定设备model，先使用 --list_devices 获取",
+        help="Lấy thông tin thiết bị, chỉ định model thiết bị, sử dụng --list_devices để lấy trước",
         metavar='DEVICE_MODEL',
     )
     parser.add_argument(
         '--run',
         type=str,
-        help="使用自然语言描述你的需求，如果你有小爱音箱的话",
+        help="Sử dụng ngôn ngữ tự nhiên mô tả nhu cầu của bạn, nếu bạn có loa thông minh Xiao Ai",
         metavar='PROMPT',
     )
     parser.add_argument(
         '--wifispeaker_name',
         type=str,
-        help="指定小爱音箱名称，默认是获取到的第一个小爱音箱",
+        help="Chỉ định tên loa thông minh Xiao Ai, mặc định là loa Xiao Ai đầu tiên được tìm thấy",
         default=None,
     )
     parser.add_argument(
         '--quiet',
         action='store_true',
-        help="小爱音箱静默执行",
+        help="Loa Xiao Ai thực hiện im lặng",
     )
 
     get = subparsers.add_parser(
         'get',
-        help="获取设备属性",
+        help="Lấy thuộc tính thiết bị",
     )
     get.set_defaults(func='get')
     get.add_argument(
         '-p', '--auth_path',
         type=str,
         default=os.path.join(os.path.expanduser("~"), ".config/mijia-api", "mijia-api-auth.json"),
-        help="认证文件保存路径，默认保存在~/.config/mijia-api/mijia-api-auth.json",
+        help="Đường dẫn lưu file xác thực, mặc định lưu tại ~/.config/mijia-api/mijia-api-auth.json",
     )
     get.add_argument(
         '--dev_name',
         type=str,
-        help="设备名称，指定为米家APP中设定的名称",
+        help="Tên thiết bị, chỉ định tên được thiết lập trong ứng dụng Mijia",
         required=True,
     )
     get.add_argument(
         '--prop_name',
         type=str,
-        help="属性名称，先使用 --get_device_info 获取",
+        help="Tên thuộc tính, sử dụng --get_device_info để lấy trước",
         required=True,
     )
 
     set = subparsers.add_parser(
         'set',
-        help="设置设备属性",
+        help="Thiết lập thuộc tính thiết bị",
     )
     set.set_defaults(func='set')
     set.add_argument(
         '-p', '--auth_path',
         type=str,
         default=os.path.join(os.path.expanduser("~"), ".config/mijia-api", "mijia-api-auth.json"),
-        help="认证文件保存路径，默认保存在~/.config/mijia-api/mijia-api-auth.json",
+        help="Đường dẫn lưu file xác thực, mặc định lưu tại ~/.config/mijia-api/mijia-api-auth.json",
     )
     set.add_argument(
         '--dev_name',
         type=str,
-        help="设备名称，指定为米家APP中设定的名称",
+        help="Tên thiết bị, chỉ định tên được thiết lập trong ứng dụng Mijia",
         required=True,
     )
     set.add_argument(
         '--prop_name',
         type=str,
-        help="属性名称，先使用 --get_device_info 获取",
+        help="Tên thuộc tính, sử dụng --get_device_info để lấy trước",
         required=True,
     )
     set.add_argument(
         '--value',
         type=str,
-        help="需要设定的属性值",
+        help="Giá trị thuộc tính cần thiết lập",
         required=True,
     )
     return parser.parse_args(args)
@@ -133,7 +133,7 @@ def init_api(auth_path: str) -> mijiaAPI:
                 auth = json.load(f)
             api = mijiaAPI(auth_data=auth)
             if not api.available:
-                raise ValueError("认证信息已过期")
+                raise ValueError("Thông tin xác thực đã hết hạn")
         except (json.JSONDecodeError, ValueError):
             api = mijiaLogin(save_path=auth_path)
             auth = api.QRlogin()
@@ -147,7 +147,7 @@ def init_api(auth_path: str) -> mijiaAPI:
 def get_devices_list(api: mijiaAPI, verbose: bool = True) -> dict:
     devices = api.get_devices_list()
     if verbose:
-        print("设备列表:")
+        print("Danh sách thiết bị:")
         for device in devices:
             print(f"  - {device['name']}\n"
                     f"    did: {device['did']}\n"
@@ -162,14 +162,14 @@ def get_homes_list(api: mijiaAPI, verbose: bool = True, device_mapping: Optional
             device_mapping = get_devices_list(api, verbose=False)
     homes = api.get_homes_list()
     if verbose:
-        print("家庭列表:")
+        print("Danh sách nhà:")
         for home in homes:
             print(f"  - {home['name']}\n"
                   f"    ID: {home['id']}\n"
-                  f"    地址: {home['address']}\n"
-                  f"    房间数量: {len(home['roomlist'])}\n"
-                  f"    创建时间: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(home['create_time']))}")
-            print( "    房间列表:")
+                  f"    Địa chỉ: {home['address']}\n"
+                  f"    Số lượng phòng: {len(home['roomlist'])}\n"
+                  f"    Thời gian tạo: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(home['create_time']))}")
+            print( "    Danh sách phòng:")
             for room in home['roomlist']:
                 devices_name = []
                 if room['dids']:
@@ -181,8 +181,8 @@ def get_homes_list(api: mijiaAPI, verbose: bool = True, device_mapping: Optional
                 dids = ', '.join(devices_name)
                 print(f"    - {room['name']}\n"
                       f"      ID: {room['id']}\n"
-                      f"      设备列表: {dids}\n"
-                      f"      创建时间: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(room['create_time']))}")
+                      f"      Danh sách thiết bị: {dids}\n"
+                      f"      Thời gian tạo: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(room['create_time']))}")
     home_mapping = {home['id']: home for home in homes}
     return home_mapping
 
@@ -193,12 +193,12 @@ def get_scenes_list(api: mijiaAPI, verbose: bool = True, home_mapping: Optional[
     for home_id, home in home_mapping.items():
         scenes = api.get_scenes_list(home_id)
         if scenes and verbose:
-            print(f"{home['name']} ({home_id}) 中的场景:")
+            print(f"Cảnh trong {home['name']} ({home_id}):")
             for scene in scenes:
                 print(f"  - {scene['name']}\n"
                       f"    ID: {scene['scene_id']}\n"
-                      f"    创建时间: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(scene['create_time'])))}\n"
-                      f"    update time: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(scene['update_time'])))}")
+                      f"    Thời gian tạo: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(scene['create_time'])))}\n"
+                      f"    Thời gian cập nhật: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(scene['update_time'])))}")
         scene_mapping.update({scene['scene_id']: scene for scene in scenes})
     return scene_mapping
 
@@ -207,11 +207,11 @@ def get_consumable_items(api: mijiaAPI, home_mapping: Optional[dict] = None):
         home_mapping = get_homes_list(api, verbose=False)
     for home_id, home in home_mapping.items():
         items = api.get_consumable_items(home_id, home['uid'])
-        print(f"{home['name']} ({home_id}) 中的耗材:")
+        print(f"Vật tư tiêu hao trong {home['name']} ({home_id}):")
         for item in items:
             for consumes_data in item['consumes_data']:
-                print(f"  - {consumes_data['details'][0]['description']} 在 {consumes_data['name']}({consumes_data['did']})\n"
-                      f"    值: {consumes_data['details'][0]['value']}")
+                print(f"  - {consumes_data['details'][0]['description']} trong {consumes_data['name']}({consumes_data['did']})\n"
+                      f"    Giá trị: {consumes_data['details'][0]['value']}")
 
 def run_scene(api: mijiaAPI, scene_id: str, scene_mapping: Optional[dict] = None) -> bool:
     if scene_mapping is None:
@@ -225,15 +225,15 @@ def run_scene(api: mijiaAPI, scene_id: str, scene_mapping: Optional[dict] = None
                 found = True
                 break
         if not found:
-            print(f"场景 {scene_name_to_find} 未找到")
+            print(f"Cảnh {scene_name_to_find} không tìm thấy")
             return False
     scene_name = scene_mapping[scene_id]['name']
     ret = api.run_scene(scene_id)
     if ret:
-        print(f"场景 {scene_name}({scene_id}) 运行成功")
+        print(f"Cảnh {scene_name}({scene_id}) chạy thành công")
         return True
     else:
-        print(f"运行场景 {scene_name}({scene_id}) 失败")
+        print(f"Chạy cảnh {scene_name}({scene_id}) thất bại")
         return False
 
 def get(args):
@@ -241,7 +241,7 @@ def get(args):
     device = mijiaDevice(api, dev_name=args.dev_name)
     value = device.get(args.prop_name)
     unit = device.prop_list[args.prop_name].unit
-    print(f"{args.dev_name} 的 {args.prop_name} 值为 {value} {unit if unit else ''}")
+    print(f"Giá trị {args.prop_name} của {args.dev_name} là {value} {unit if unit else ''}")
 
 def set(args):
     api = init_api(args.auth_path)
@@ -249,9 +249,9 @@ def set(args):
     ret = device.set(args.prop_name, args.value)
     unit = device.prop_list[args.prop_name].unit
     if ret:
-        print(f"{args.dev_name} 的 {args.prop_name} 值已设置为 {args.value} {unit if unit else ''}")
+        print(f"Giá trị {args.prop_name} của {args.dev_name} đã được thiết lập thành {args.value} {unit if unit else ''}")
     else:
-        print(f"设置 {args.dev_name} 的 {args.prop_name} 值为 {args.value} 失败")
+        print(f"Thiết lập giá trị {args.prop_name} của {args.dev_name} thành {args.value} thất bại")
 
 
 def main(args):
@@ -295,7 +295,7 @@ def main(args):
                     wifispeaker = mijiaDevice(api, dev_name=device['name'])
                     break
             if wifispeaker is None:
-                raise ValueError("未找到小爱音箱设备")
+                raise ValueError("Không tìm thấy thiết bị loa thông minh Xiao Ai")
         else:
             wifispeaker = mijiaDevice(api, dev_name=args.wifispeaker_name)
         wifispeaker.run_action('execute-text-directive', _in=[args.run, args.quiet])

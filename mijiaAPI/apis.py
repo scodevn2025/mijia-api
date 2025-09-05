@@ -119,13 +119,13 @@ class mijiaAPI(object):
 
     def run_scene(self, scene_id: str) -> bool:
         """
-        运行场景。
+        Chạy cảnh.
 
         Args:
-            scene_id (str): 场景ID，从get_scenes_list获取。
+            scene_id (str): ID cảnh, lấy từ get_scenes_list.
 
         Returns:
-            bool: 操作结果。
+            bool: Kết quả thao tác.
         """
         uri = '/appgateway/miot/appsceneservice/AppSceneService/RunScene'
         data = {"scene_id": scene_id, "trigger_key": "user.click"}
@@ -133,14 +133,14 @@ class mijiaAPI(object):
 
     def get_consumable_items(self, home_id: str, owner_id: Optional[int] = None) -> list:
         """
-        获取耗材列表。
+        Lấy danh sách vật tư tiêu hao.
 
         Args:
-            home_id (str): 家庭ID，从get_homes_list获取。
-            owner_id (str, optional): 用户ID，默认为None，如果`home_id`为共享家庭，则需要提供owner_id。
+            home_id (str): ID nhà, lấy từ get_homes_list.
+            owner_id (str, optional): ID người dùng, mặc định là None, nếu `home_id` là nhà chia sẻ, cần cung cấp owner_id.
 
         Returns:
-            list: 耗材列表。
+            list: Danh sách vật tư tiêu hao.
         """
         uri = '/v2/home/standard_consumable_items'
         data = {"home_id": int(home_id), "owner_id": int(owner_id) if owner_id else self.userId}
@@ -151,22 +151,22 @@ class mijiaAPI(object):
 
     def get_devices_prop(self, data: list) -> list:
         """
-        获取设备属性。
+        Lấy thuộc tính thiết bị.
 
         Args:
-            data (list): 设备属性请求列表，每项为包含以下键的字典：
-                - did: 设备ID，从get_devices_list获取
-                - siid: 服务ID，从 https://home.miot-spec.com/spec/{model} 获取，model从get_devices_list获取
-                - piid: 属性ID，从 https://home.miot-spec.com/spec/{model} 获取，model从get_devices_list获取
+            data (list): Danh sách yêu cầu thuộc tính thiết bị, mỗi mục là từ điển chứa các key sau:
+                - did: ID thiết bị, lấy từ get_devices_list
+                - siid: ID dịch vụ, lấy từ https://home.miot-spec.com/spec/{model}, model từ get_devices_list
+                - piid: ID thuộc tính, lấy từ https://home.miot-spec.com/spec/{model}, model từ get_devices_list
 
-                示例(yeelink.light.lamp4)：
+                Ví dụ(yeelink.light.lamp4):
                 [
-                    {"did": "1234567890", "siid": 2, "piid": 2}, # 获取亮度
-                    {"did": "1234567890", "siid": 2, "piid": 3}, # 获取色温
+                    {"did": "1234567890", "siid": 2, "piid": 2}, # Lấy độ sáng
+                    {"did": "1234567890", "siid": 2, "piid": 3}, # Lấy nhiệt độ màu
                 ]
 
         Returns:
-            list: 设备属性信息列表。
+            list: Danh sách thông tin thuộc tính thiết bị.
         """
         uri = '/miotspec/prop/get'
         data = {"params": data}
@@ -174,23 +174,23 @@ class mijiaAPI(object):
 
     def set_devices_prop(self, data: list) -> list:
         """
-        设置设备属性。
+        Thiết lập thuộc tính thiết bị.
 
         Args:
-            data (list): 设备属性设置列表，每项为包含以下键的字典：
-                - did: 设备ID，从get_devices_list获取
-                - siid: 服务ID，从 https://home.miot-spec.com/spec/{model} 获取，model从get_devices_list获取
-                - piid: 属性ID，从 https://home.miot-spec.com/spec/{model} 获取，model从get_devices_list获取
-                - value: 要设置的值
+            data (list): Danh sách thiết lập thuộc tính thiết bị, mỗi mục là từ điển chứa các key sau:
+                - did: ID thiết bị, lấy từ get_devices_list
+                - siid: ID dịch vụ, lấy từ https://home.miot-spec.com/spec/{model}, model từ get_devices_list
+                - piid: ID thuộc tính, lấy từ https://home.miot-spec.com/spec/{model}, model từ get_devices_list
+                - value: Giá trị cần thiết lập
 
-                示例(yeelink.light.lamp4)：
+                Ví dụ(yeelink.light.lamp4):
                 [
-                    {"did": "1234567890", "siid": 2, "piid": 2, "value": 50},  # 设置亮度为50%
-                    {"did": "1234567890", "siid": 2, "piid": 3, "value": 2700} # 设置色温为2700K
+                    {"did": "1234567890", "siid": 2, "piid": 2, "value": 50},  # Thiết lập độ sáng 50%
+                    {"did": "1234567890", "siid": 2, "piid": 3, "value": 2700} # Thiết lập nhiệt độ màu 2700K
                 ]
 
         Returns:
-            list: 操作结果。
+            list: Kết quả thao tác.
         """
         uri = '/miotspec/prop/set'
         data = {"params": data}

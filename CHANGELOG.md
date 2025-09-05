@@ -1,26 +1,26 @@
-# 更新日志
+# Nhật ký thay đổi
 
-本文档记录了项目的v1.3.7以来的重要变更。
+Tài liệu này ghi lại các thay đổi quan trọng của dự án kể từ v1.3.7.
 
 ## [2.0.1](https://github.com/Do1e/mijia-api/compare/v2.0.0...v2.0.1) - 2025-06-29
 ### bugfix
-* 处理一个家庭中超过200个设备的情况，修复了`get_devices_list`方法可能无法获取所有设备的问题
+* Xử lý trường hợp hơn 200 thiết bị trong một gia đình, sửa lỗi phương thức `get_devices_list` có thể không lấy được tất cả thiết bị
 ### improvement
-* 所有打印内容均使用中文
+* Tất cả nội dung in đều sử dụng tiếng Trung
 
 ## [2.0.0](https://github.com/Do1e/mijia-api/compare/v1.5.0...v2.0.0) - 2025-06-27
-#### 此版本有多项破坏性变更，请在升级后参考下述说明修复
+#### Phiên bản này có nhiều thay đổi đột phá, vui lòng tham khảo hướng dẫn dưới đây để sửa chữa sau khi nâng cấp
 ### new feature
-* 新增API：`get_statistics`，用于获取设备的统计信息，使用方法参见[demos/test_get_statistics.py](demos/test_get_statistics.py)
-* 新增文件[demos/decrypt.py](demos/decrypt.py)和[demos/decrypt_har.py](demos/decrypt_har.py)，用于解密米家APP抓包
-* `get_homes_list`支持获取共享家庭
-* `get_consumable_items`支持获取共享家庭的耗材列表，需要额外指定`owner_id`参数
-* `get_devices_list`支持获取共享家庭的设备列表
+* Thêm API: `get_statistics`, dùng để lấy thông tin thống kê của thiết bị, cách sử dụng xem [demos/test_get_statistics.py](demos/test_get_statistics.py)
+* Thêm file [demos/decrypt.py](demos/decrypt.py) và [demos/decrypt_har.py](demos/decrypt_har.py), dùng để giải mã gói tin bắt từ ứng dụng Mijia
+* `get_homes_list` hỗ trợ lấy gia đình được chia sẻ
+* `get_consumable_items` hỗ trợ lấy danh sách vật tư tiêu hao của gia đình được chia sẻ, cần chỉ định thêm tham số `owner_id`
+* `get_devices_list` hỗ trợ lấy danh sách thiết bị của gia đình được chia sẻ
 ### improvement
-* 认证文件保存`cUserId`，可作为`userId`的替代，暂时未使用
-* **此版本彻底移除了`mijiaDevices`，请及时替换为`mijiaDevice`**
-* **`mijiaDevice`的`set`方法更换了参数顺序，请及时修复**
-* **部分API调用后需要读取返回值的字典，如`api.get_devices_list()['list']`，现在直接返回列表，请注意修改，如`api.get_devices_list()`，具体列表如下：**
+* File xác thực lưu `cUserId`, có thể dùng thay thế cho `userId`, tạm thời chưa sử dụng
+* **Phiên bản này đã loại bỏ hoàn toàn `mijiaDevices`, vui lòng kịp thời thay thế bằng `mijiaDevice`**
+* **Phương thức `set` của `mijiaDevice` đã thay đổi thứ tự tham số, vui lòng kịp thời sửa chữa**
+* **Một số API sau khi gọi cần đọc từ điển giá trị trả về, như `api.get_devices_list()['list']`, giờ trả về trực tiếp danh sách, vui lòng chú ý sửa đổi, như `api.get_devices_list()`, danh sách cụ thể như sau:**
   * `api.get_devices_list()['list']` -> `api.get_devices_list()`
   * `api.get_homes_list()['homelist']` -> `api.get_homes_list()`
   * `api.get_scenes_list(home_id)['scene_info_list']` -> `api.get_scenes_list(home_id)`
@@ -28,24 +28,24 @@
 
 ## [1.5.0](https://github.com/Do1e/mijia-api/compare/v1.4.5...v1.5.0) - 2025-06-19
 ### new feature
-* 重命名`mijiaDevices`为`mijiaDevice`
+* Đổi tên `mijiaDevices` thành `mijiaDevice`
 
 ## [1.4.5](https://github.com/Do1e/mijia-api/compare/v1.4.4...v1.4.5) - 2025-06-16
 ### bugfix
-* 登陆过程中无法获取用户信息时，处理相关报错
+* Xử lý lỗi liên quan khi không thể lấy thông tin người dùng trong quá trình đăng nhập
 
 ## [1.4.4](https://github.com/Do1e/mijia-api/compare/v1.4.3...v1.4.4) - 2025-06-14
 ### new feature
-* `get_device_info`支持[https://home.miot-spec.com/](https://home.miot-spec.com/)中的中文描述
+* `get_device_info` hỗ trợ mô tả tiếng Trung trong [https://home.miot-spec.com/](https://home.miot-spec.com/)
 ### bugfix
-* cli修复了执行`get_device_info`必须先登录的问题
+* CLI sửa lỗi phải đăng nhập trước khi thực hiện `get_device_info`
 ### improvement
-* 优化日志输出
-* 使用`login`方法的警告修改得更加明确
+* Tối ưu đầu ra log
+* Cảnh báo sử dụng phương thức `login` được sửa đổi rõ ràng hơn
 
 ## [1.4.3](https://github.com/Do1e/mijia-api/compare/v1.4.2...v1.4.3) - 2025-05-22
 ### bugfix
-* 针对部分特殊的设备，修复了`get_device_info`的TypeError
+* Đối với một số thiết bị đặc biệt, sửa TypeError của `get_device_info`
 
 ## [1.4.2](https://github.com/Do1e/mijia-api/compare/v1.4.1...v1.4.2) - 2025-05-19
 ### new feature

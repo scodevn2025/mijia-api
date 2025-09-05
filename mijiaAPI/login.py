@@ -54,17 +54,17 @@ class mijiaLogin(object):
 
     def _get_index(self) -> dict[str, str]:
         """
-        获取索引页数据。
+        Lấy dữ liệu trang index.
 
         Returns:
-            dict[str, str]: 包含设备ID和其他必要参数的字典。
+            dict[str, str]: Từ điển chứa ID thiết bị và các tham số cần thiết khác.
 
         Raises:
-            LoginError: 请求索引页失败时抛出。
+            LoginError: Ném ra khi yêu cầu trang index thất bại.
         """
         ret = self.session.get(msgURL)
         if ret.status_code != 200:
-            raise LoginError(ret.status_code, f'获取索引页失败, {ret.text}')
+            raise LoginError(ret.status_code, f'Lấy trang index thất bại, {ret.text}')
         ret_data = json.loads(ret.text[11:])
         data = {'deviceId': self.deviceId}
         data.update({
@@ -75,21 +75,21 @@ class mijiaLogin(object):
 
     def _get_account_info(self, user_id: str) -> dict[str, str]:
         """
-        获取账户信息。
+        Lấy thông tin tài khoản.
 
         Args:
-            user_id (str): 用户ID。
+            user_id (str): ID người dùng.
 
         Returns:
-            dict[str, str]: 包含账户信息的字典。
+            dict[str, str]: Từ điển chứa thông tin tài khoản.
 
         Raises:
-            LoginError: 获取账户信息失败时抛出。
+            LoginError: Ném ra khi lấy thông tin tài khoản thất bại.
         """
         try:
             ret = self.session.get(accountURL + str(user_id))
             if ret.status_code != 200:
-                raise LoginError(ret.status_code, f'获取账户页面失败, {ret.text}')
+                raise LoginError(ret.status_code, f'Lấy trang tài khoản thất bại, {ret.text}')
             data = json.loads(ret.text[11:])['data']
         except (KeyError, json.JSONDecodeError) as e:
             data = {}
@@ -98,16 +98,16 @@ class mijiaLogin(object):
     @staticmethod
     def _extract_latest_gmt_datetime(data: dict) -> datetime:
         """
-        提取过期时间并转换为中国时区。
+        Trích xuất thời gian hết hạn và chuyển đổi sang múi giờ Trung Quốc.
 
         Args:
-            data (dict): 用户凭证数据，包含GMT时间的键值对。
+            data (dict): Dữ liệu thông tin đăng nhập người dùng, chứa các cặp key-value có thời gian GMT.
 
         Returns:
-            datetime: 转换后的中国时区时间。
+            datetime: Thời gian múi giờ Trung Quốc sau khi chuyển đổi.
 
         Raises:
-            LoginError: 如果没有找到GMT时间键或解析失败，抛出登录错误。
+            LoginError: Nếu không tìm thấy key thời gian GMT hoặc phân tích thất bại, ném ra lỗi đăng nhập.
         """
 
         gmt_time_keys = [
@@ -116,49 +116,49 @@ class mijiaLogin(object):
         ]
 
         if not gmt_time_keys:
-            raise LoginError(-1, '在cookie中未找到GMT时间键')
+            raise LoginError(-1, 'Không tìm thấy key thời gian GMT trong cookie')
         parsed_times = [datetime.strptime(k, '%d-%b-%Y %H:%M:%S GMT') for k in gmt_time_keys]
         latest_utc_time = max(parsed_times)
         china_time = latest_utc_time + timedelta(hours=8)
 
-        # [FIXME] 实测此处的过期时间并不准确，实际过期时间可能大于此处获取的时间
-        #         cookie 中唯一用到的 serviceToken 并无过期时间
+        # [FIXME] Thực tế thời gian hết hạn ở đây không chính xác, thời gian hết hạn thực tế có thể lớn hơn thời gian lấy được ở đây
+        #         serviceToken duy nhất được sử dụng trong cookie không có thời gian hết hạn
         return china_time
 
     def _save_auth(self) -> None:
         """
-        保存认证数据到文件。
+        Lưu dữ liệu xác thực vào file.
 
-        如果设置了保存路径且有认证数据，则将其以JSON格式保存到指定路径。
+        Nếu đã thiết lập đường dẫn lưu và có dữ liệu xác thực, sẽ lưu dưới định dạng JSON vào đường dẫn đã chỉ định.
         """
         if self.save_path is not None and self.auth_data is not None:
             if not os.path.isabs(self.save_path):
                 self.save_path = os.path.abspath(self.save_path)
             if os.path.exists(self.save_path) and not os.path.isfile(self.save_path):
-                raise ValueError(f'[{self.save_path}] 不是文件')
+                raise ValueError(f'[{self.save_path}] không phải là file')
             if not os.path.exists(os.path.dirname(self.save_path)):
                 os.makedirs(os.path.dirname(self.save_path))
             with open(self.save_path, 'w') as f:
                 json.dump(self.auth_data, f, indent=2)
-            logger.info(f'认证文件已保存到 [{self.save_path}]')
+            logger.info(f'File xác thực đã được lưu tại [{self.save_path}]')
         else:
-            logger.info('认证文件未保存')
+            logger.info('File xác thực chưa được lưu')
 
     def login(self, username: str, password: str) -> dict:
         """
-        使用用户名和密码登录。
+        Đăng nhập bằng tên người dùng và mật khẩu.
 
         Args:
-            username (str): 小米账户用户名（邮箱/手机号/小米ID）。
-            password (str): 小米账户密码。
+            username (str): Tên người dùng tài khoản Xiaomi (email/số điện thoại/Xiaomi ID).
+            password (str): Mật khẩu tài khoản Xiaomi.
 
         Returns:
-            dict: 授权数据，包含userId、ssecurity、deviceId和serviceToken。
+            dict: Dữ liệu ủy quyền, bao gồm userId, ssecurity, deviceId và serviceToken.
 
         Raises:
-            LoginError: 登录失败时抛出。
+            LoginError: Ném ra khi đăng nhập thất bại.
         """
-        logger.warning('使用账号密码登录很可能需要验证码。请尝试使用 `QRlogin` 方法。')
+        logger.warning('Đăng nhập bằng tài khoản mật khẩu rất có thể cần mã xác thực. Vui lòng thử sử dụng phương thức `QRlogin`.')
         data = self._get_index()
         post_data = {
             'qs': data['qs'],
@@ -171,17 +171,17 @@ class mijiaLogin(object):
         }
         ret = self.session.post(loginURL, data=post_data)
         if ret.status_code != 200:
-            raise LoginError(ret.status_code, f'登录页面提交失败, {ret.text}')
+            raise LoginError(ret.status_code, f'Gửi trang đăng nhập thất bại, {ret.text}')
         ret_data = json.loads(ret.text[11:])
         if ret_data['code'] != 0:
             raise LoginError(ret_data['code'], ret_data['desc'])
         if 'location' not in ret_data:
-            raise LoginError(-1, '获取跳转位置失败')
+            raise LoginError(-1, 'Lấy vị trí chuyển hướng thất bại')
         if 'notificationUrl' in ret_data:
-            raise LoginError(-1, '需要验证码，请尝试使用 `QRlogin` 方法')
+            raise LoginError(-1, 'Cần mã xác thực, vui lòng thử sử dụng phương thức `QRlogin`')
         ret = self.session.get(ret_data['location'])
         if ret.status_code != 200:
-            raise LoginError(ret.status_code, f'获取跳转位置失败, {ret.text}')
+            raise LoginError(ret.status_code, f'Lấy vị trí chuyển hướng thất bại, {ret.text}')
         cookies = self.session.cookies.get_dict()
 
         self.auth_data = {
@@ -200,13 +200,13 @@ class mijiaLogin(object):
     @staticmethod
     def _print_qr(loginurl: str, box_size: int = 10) -> None:
         """
-        打印并保存二维码。
+        In và lưu mã QR.
 
         Args:
-            loginurl (str): 包含登录信息的URL。
-            box_size (int, optional): 二维码大小。默认为10。
+            loginurl (str): URL chứa thông tin đăng nhập.
+            box_size (int, optional): Kích thước mã QR. Mặc định là 10.
         """
-        logger.info('请使用米家APP扫描下方二维码')
+        logger.info('Vui lòng sử dụng ứng dụng Mijia để quét mã QR dưới đây')
         qr = QRCode(border=1, box_size=box_size)
         qr.add_data(loginurl)
         qr.make_image().save('qr.png')
@@ -214,20 +214,20 @@ class mijiaLogin(object):
             qr.print_ascii(invert=True, tty=True)
         except OSError:
             qr.print_ascii(invert=True, tty=False)
-            logger.info('如果无法扫描二维码，'
-                        '请更改终端字体，'
-                        '如"Maple Mono"、"Fira Code"等。\n'
-                        '或者直接使用当前目录下的qr.png文件。')
+            logger.info('Nếu không thể quét mã QR, '
+                        'vui lòng thay đổi font chữ của terminal, '
+                        'như "Maple Mono", "Fira Code", v.v.\n'
+                        'Hoặc sử dụng trực tiếp file qr.png trong thư mục hiện tại.')
 
     def QRlogin(self) -> dict:
         """
-        使用二维码登录。
+        Đăng nhập bằng mã QR.
 
         Returns:
-            dict: 授权数据，包含userId、ssecurity、deviceId和serviceToken。
+            dict: Dữ liệu ủy quyền, bao gồm userId, ssecurity, deviceId và serviceToken.
 
         Raises:
-            LoginError: 登录失败时抛出。
+            LoginError: Ném ra khi đăng nhập thất bại.
         """
         data = self._get_index()
         location = data['location']
@@ -250,7 +250,7 @@ class mijiaLogin(object):
         url = qrURL + '?' + parse.urlencode(params)
         ret = self.session.get(url)
         if ret.status_code != 200:
-            raise LoginError(ret.status_code, f'获取二维码URL失败, {ret.text}')
+            raise LoginError(ret.status_code, f'Lấy URL mã QR thất bại, {ret.text}')
         ret_data = json.loads(ret.text[11:])
         if ret_data['code'] != 0:
             raise LoginError(ret_data['code'], ret_data['desc'])
@@ -259,15 +259,15 @@ class mijiaLogin(object):
         try:
             ret = self.session.get(ret_data['lp'], timeout=60, headers={'Connection': 'keep-alive'})
         except requests.exceptions.Timeout:
-            raise LoginError(-1, '超时，请重试')
+            raise LoginError(-1, 'Hết thời gian chờ, vui lòng thử lại')
         if ret.status_code != 200:
-            raise LoginError(ret.status_code, f'等待登录失败, {ret.text}')
+            raise LoginError(ret.status_code, f'Chờ đăng nhập thất bại, {ret.text}')
         ret_data = json.loads(ret.text[11:])
         if ret_data['code'] != 0:
             raise LoginError(ret_data['code'], ret_data['desc'])
         ret = self.session.get(ret_data['location'])
         if ret.status_code != 200:
-            raise LoginError(ret.status_code, f'获取跳转位置失败, {ret.text}')
+            raise LoginError(ret.status_code, f'Lấy vị trí chuyển hướng thất bại, {ret.text}')
         cookies = self.session.cookies.get_dict()
 
         self.auth_data = {
@@ -285,7 +285,7 @@ class mijiaLogin(object):
 
     def __del__(self):
         """
-        析构函数，清理生成的二维码文件。
+        Hàm hủy, dọn dẹp file mã QR đã tạo.
         """
         if os.path.exists('qr.png'):
             os.remove('qr.png')

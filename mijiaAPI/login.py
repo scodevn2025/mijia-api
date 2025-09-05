@@ -20,11 +20,11 @@ logger = get_logger(__name__)
 class LoginError(Exception):
     def __init__(self, code: int, message: str):
         """
-        初始化登录错误异常。
+        Khởi tạo ngoại lệ đăng nhập.
 
         Args:
-            code (int): 错误代码。
-            message (str): 错误消息。
+            code (int): Mã lỗi.
+            message (str): Thông báo lỗi.
         """
         self.code = code
         self.message = message
@@ -34,10 +34,11 @@ class LoginError(Exception):
 class mijiaLogin(object):
     def __init__(self, save_path: Optional[str] = None):
         """
-        初始化米家登录对象。
+        Khởi tạo đối tượng đăng nhập Mi Home.
 
         Args:
-            save_path (str, optional): 认证数据保存路径。默认为None。
+            save_path (str, optional): Đường dẫn lưu dữ liệu xác thực, mặc định
+            ``None``.
         """
         self.auth_data = None
         self.save_path = save_path
@@ -54,13 +55,13 @@ class mijiaLogin(object):
 
     def _get_index(self) -> dict[str, str]:
         """
-        获取索引页数据。
+        Lấy dữ liệu trang chỉ mục.
 
         Returns:
-            dict[str, str]: 包含设备ID和其他必要参数的字典。
+            dict[str, str]: Từ điển chứa ``deviceId`` và các tham số cần thiết.
 
         Raises:
-            LoginError: 请求索引页失败时抛出。
+            LoginError: Nếu yêu cầu trang chỉ mục thất bại.
         """
         ret = self.session.get(msgURL)
         if ret.status_code != 200:
@@ -75,16 +76,16 @@ class mijiaLogin(object):
 
     def _get_account_info(self, user_id: str) -> dict[str, str]:
         """
-        获取账户信息。
+        Lấy thông tin tài khoản.
 
         Args:
-            user_id (str): 用户ID。
+            user_id (str): ID người dùng.
 
         Returns:
-            dict[str, str]: 包含账户信息的字典。
+            dict[str, str]: Thông tin tài khoản.
 
         Raises:
-            LoginError: 获取账户信息失败时抛出。
+            LoginError: Khi không thể lấy thông tin tài khoản.
         """
         try:
             ret = self.session.get(accountURL + str(user_id))
@@ -98,16 +99,17 @@ class mijiaLogin(object):
     @staticmethod
     def _extract_latest_gmt_datetime(data: dict) -> datetime:
         """
-        提取过期时间并转换为中国时区。
+        Trích xuất thời điểm hết hạn và chuyển sang múi giờ Trung Quốc.
 
         Args:
-            data (dict): 用户凭证数据，包含GMT时间的键值对。
+            data (dict): Dữ liệu cookie chứa các cặp khóa thời gian GMT.
 
         Returns:
-            datetime: 转换后的中国时区时间。
+            datetime: Thời gian theo múi giờ Trung Quốc.
 
         Raises:
-            LoginError: 如果没有找到GMT时间键或解析失败，抛出登录错误。
+            LoginError: Nếu không tìm thấy khóa thời gian GMT hoặc phân tích
+            thất bại.
         """
 
         gmt_time_keys = [
@@ -121,15 +123,17 @@ class mijiaLogin(object):
         latest_utc_time = max(parsed_times)
         china_time = latest_utc_time + timedelta(hours=8)
 
-        # [FIXME] 实测此处的过期时间并不准确，实际过期时间可能大于此处获取的时间
-        #         cookie 中唯一用到的 serviceToken 并无过期时间
+        # [FIXME] Thực tế thời gian hết hạn tại đây không chính xác, có thể dài
+        #         hơn giá trị lấy được. serviceToken trong cookie không có
+        #         thời gian hết hạn rõ ràng.
         return china_time
 
     def _save_auth(self) -> None:
         """
-        保存认证数据到文件。
+        Lưu dữ liệu xác thực ra tệp.
 
-        如果设置了保存路径且有认证数据，则将其以JSON格式保存到指定路径。
+        Nếu thiết lập đường dẫn lưu và có dữ liệu, nội dung sẽ được ghi dưới
+        dạng JSON vào đường dẫn đó.
         """
         if self.save_path is not None and self.auth_data is not None:
             if not os.path.isabs(self.save_path):
@@ -146,17 +150,18 @@ class mijiaLogin(object):
 
     def login(self, username: str, password: str) -> dict:
         """
-        使用用户名和密码登录。
+        Đăng nhập bằng tài khoản và mật khẩu.
 
         Args:
-            username (str): 小米账户用户名（邮箱/手机号/小米ID）。
-            password (str): 小米账户密码。
+            username (str): Tên đăng nhập (email/điện thoại/ID Xiaomi).
+            password (str): Mật khẩu tài khoản.
 
         Returns:
-            dict: 授权数据，包含userId、ssecurity、deviceId和serviceToken。
+            dict: Dữ liệu ủy quyền gồm ``userId``, ``ssecurity``, ``deviceId``
+            và ``serviceToken``.
 
         Raises:
-            LoginError: 登录失败时抛出。
+            LoginError: Khi đăng nhập thất bại.
         """
         logger.warning('使用账号密码登录很可能需要验证码。请尝试使用 `QRlogin` 方法。')
         data = self._get_index()
@@ -200,11 +205,11 @@ class mijiaLogin(object):
     @staticmethod
     def _print_qr(loginurl: str, box_size: int = 10) -> None:
         """
-        打印并保存二维码。
+        In ra và lưu mã QR.
 
         Args:
-            loginurl (str): 包含登录信息的URL。
-            box_size (int, optional): 二维码大小。默认为10。
+            loginurl (str): URL chứa thông tin đăng nhập.
+            box_size (int, optional): Kích thước QR, mặc định 10.
         """
         logger.info('请使用米家APP扫描下方二维码')
         qr = QRCode(border=1, box_size=box_size)
@@ -221,13 +226,14 @@ class mijiaLogin(object):
 
     def QRlogin(self) -> dict:
         """
-        使用二维码登录。
+        Đăng nhập thông qua mã QR.
 
         Returns:
-            dict: 授权数据，包含userId、ssecurity、deviceId和serviceToken。
+            dict: Thông tin ủy quyền gồm ``userId``, ``ssecurity``, ``deviceId``
+            và ``serviceToken``.
 
         Raises:
-            LoginError: 登录失败时抛出。
+            LoginError: Nếu đăng nhập thất bại.
         """
         data = self._get_index()
         location = data['location']
@@ -285,7 +291,7 @@ class mijiaLogin(object):
 
     def __del__(self):
         """
-        析构函数，清理生成的二维码文件。
+        Hàm hủy, xóa tệp mã QR đã tạo.
         """
         if os.path.exists('qr.png'):
             os.remove('qr.png')

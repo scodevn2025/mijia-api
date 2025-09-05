@@ -11,13 +11,14 @@ from .utils import post_data
 class mijiaAPI(object):
     def __init__(self, auth_data: dict):
         """
-        初始化mijiaAPI对象。
+        Khởi tạo đối tượng **mijiaAPI**.
 
         Args:
-            auth_data (dict): 包含授权信息的字典，必须包含'userId'、'deviceId'、'ssecurity'和'serviceToken'。
+            auth_data (dict): Từ điển chứa thông tin ủy quyền, bắt buộc phải có
+            ``userId``, ``deviceId``, ``ssecurity`` và ``serviceToken``.
 
         Raises:
-            Exception: 当授权数据不完整时抛出异常。
+            Exception: Ném ra khi dữ liệu ủy quyền không đầy đủ.
         """
         if any(k not in auth_data for k in ['userId', 'deviceId', 'ssecurity', 'serviceToken']):
             raise Exception('授权数据无效')
@@ -42,10 +43,10 @@ class mijiaAPI(object):
     @property
     def available(self) -> bool:
         """
-        检查API是否可用。
+        Kiểm tra tính khả dụng của API.
 
         Returns:
-            bool: API可用返回True，否则返回False。
+            bool: ``True`` nếu API vẫn còn hiệu lực, ngược lại ``False``.
         """
         if self.expireTime:
             expire_time = datetime.strptime(self.expireTime, '%Y-%m-%d %H:%M:%S')
@@ -56,10 +57,10 @@ class mijiaAPI(object):
 
     def get_devices_list(self) -> list:
         """
-        获取设备列表。
+        Lấy danh sách thiết bị.
 
         Returns:
-            dict: 设备列表。
+            dict: Danh sách thiết bị.
         """
         uri = '/home/home_device_list'
         home_list = self.get_homes_list()
@@ -89,10 +90,10 @@ class mijiaAPI(object):
 
     def get_homes_list(self) -> list:
         """
-        获取家庭列表。
+        Lấy danh sách "nhà".
 
         Returns:
-            list: 家庭列表，包括房间信息。
+            list: Danh sách nhà bao gồm thông tin phòng.
         """
         uri = '/v2/homeroom/gethome_merged'
         data = {"fg": True, "fetch_share": True, "fetch_share_dev": True, "limit": 300, "app_ver": 7}
@@ -100,15 +101,16 @@ class mijiaAPI(object):
 
     def get_scenes_list(self, home_id: str) -> list:
         """
-        获取场景列表。
+        Lấy danh sách kịch bản (scene).
 
-        在米家APP中通过"添加 -> 手动控制"设置。
+        Các kịch bản được thiết lập trong ứng dụng Mi Home qua
+        "Thêm -> Điều khiển thủ công".
 
         Args:
-            home_id (str): 家庭ID，从get_homes_list获取。
+            home_id (str): ID của nhà, lấy từ ``get_homes_list``.
 
         Returns:
-            list: 场景列表。
+            list: Danh sách kịch bản.
         """
         uri = '/appgateway/miot/appsceneservice/AppSceneService/GetSceneList'
         data = {"home_id": home_id}
@@ -119,13 +121,13 @@ class mijiaAPI(object):
 
     def run_scene(self, scene_id: str) -> bool:
         """
-        运行场景。
+        Chạy một kịch bản đã định nghĩa.
 
         Args:
-            scene_id (str): 场景ID，从get_scenes_list获取。
+            scene_id (str): ID của kịch bản, lấy từ ``get_scenes_list``.
 
         Returns:
-            bool: 操作结果。
+            bool: Kết quả thực thi.
         """
         uri = '/appgateway/miot/appsceneservice/AppSceneService/RunScene'
         data = {"scene_id": scene_id, "trigger_key": "user.click"}
@@ -133,14 +135,15 @@ class mijiaAPI(object):
 
     def get_consumable_items(self, home_id: str, owner_id: Optional[int] = None) -> list:
         """
-        获取耗材列表。
+        Lấy danh sách vật tư tiêu hao của thiết bị.
 
         Args:
-            home_id (str): 家庭ID，从get_homes_list获取。
-            owner_id (str, optional): 用户ID，默认为None，如果`home_id`为共享家庭，则需要提供owner_id。
+            home_id (str): ID của nhà, lấy từ ``get_homes_list``.
+            owner_id (str, optional): ID người dùng, cần thiết nếu ``home_id``
+            thuộc nhà được chia sẻ.
 
         Returns:
-            list: 耗材列表。
+            list: Danh sách vật tư.
         """
         uri = '/v2/home/standard_consumable_items'
         data = {"home_id": int(home_id), "owner_id": int(owner_id) if owner_id else self.userId}
@@ -151,22 +154,23 @@ class mijiaAPI(object):
 
     def get_devices_prop(self, data: list) -> list:
         """
-        获取设备属性。
+        Lấy thuộc tính của thiết bị.
 
         Args:
-            data (list): 设备属性请求列表，每项为包含以下键的字典：
-                - did: 设备ID，从get_devices_list获取
-                - siid: 服务ID，从 https://home.miot-spec.com/spec/{model} 获取，model从get_devices_list获取
-                - piid: 属性ID，从 https://home.miot-spec.com/spec/{model} 获取，model从get_devices_list获取
+            data (list): Danh sách yêu cầu thuộc tính, mỗi phần tử là một
+            dict gồm các khóa:
+                - did: ID thiết bị, lấy từ ``get_devices_list``
+                - siid: ID dịch vụ, tra cứu tại https://home.miot-spec.com/spec/{model}
+                - piid: ID thuộc tính, tra cứu tương tự
 
-                示例(yeelink.light.lamp4)：
+                Ví dụ (yeelink.light.lamp4):
                 [
-                    {"did": "1234567890", "siid": 2, "piid": 2}, # 获取亮度
-                    {"did": "1234567890", "siid": 2, "piid": 3}, # 获取色温
+                    {"did": "1234567890", "siid": 2, "piid": 2}, # độ sáng
+                    {"did": "1234567890", "siid": 2, "piid": 3}, # nhiệt độ màu
                 ]
 
         Returns:
-            list: 设备属性信息列表。
+            list: Thông tin thuộc tính của thiết bị.
         """
         uri = '/miotspec/prop/get'
         data = {"params": data}
@@ -174,23 +178,23 @@ class mijiaAPI(object):
 
     def set_devices_prop(self, data: list) -> list:
         """
-        设置设备属性。
+        Thiết lập thuộc tính cho thiết bị.
 
         Args:
-            data (list): 设备属性设置列表，每项为包含以下键的字典：
-                - did: 设备ID，从get_devices_list获取
-                - siid: 服务ID，从 https://home.miot-spec.com/spec/{model} 获取，model从get_devices_list获取
-                - piid: 属性ID，从 https://home.miot-spec.com/spec/{model} 获取，model从get_devices_list获取
-                - value: 要设置的值
+            data (list): Danh sách thuộc tính cần đặt, mỗi phần tử gồm:
+                - did: ID thiết bị
+                - siid: ID dịch vụ
+                - piid: ID thuộc tính
+                - value: Giá trị cần thiết lập
 
-                示例(yeelink.light.lamp4)：
+                Ví dụ (yeelink.light.lamp4):
                 [
-                    {"did": "1234567890", "siid": 2, "piid": 2, "value": 50},  # 设置亮度为50%
-                    {"did": "1234567890", "siid": 2, "piid": 3, "value": 2700} # 设置色温为2700K
+                    {"did": "1234567890", "siid": 2, "piid": 2, "value": 50},  # đặt độ sáng 50%
+                    {"did": "1234567890", "siid": 2, "piid": 3, "value": 2700} # đặt nhiệt độ màu 2700K
                 ]
 
         Returns:
-            list: 操作结果。
+            list: Kết quả thao tác.
         """
         uri = '/miotspec/prop/set'
         data = {"params": data}
@@ -198,20 +202,21 @@ class mijiaAPI(object):
 
     def run_action(self, data: dict) -> dict:
         """
-        执行设备动作。
+        Thực thi một hành động của thiết bị.
 
         Args:
-            data (dict): 动作请求，包含以下键：
-                - did: 设备ID，从get_devices_list获取
-                - siid: 服务ID，从 https://home.miot-spec.com/spec/{model} 获取，model从get_devices_list获取
-                - aiid: 动作ID，从 https://home.miot-spec.com/spec/{model} 获取，model从get_devices_list获取
-                - value: 参数列表
+            data (dict): Yêu cầu hành động với các khóa:
+                - did: ID thiết bị
+                - siid: ID dịch vụ
+                - aiid: ID hành động
+                - value: Danh sách tham số
 
-                示例(xiaomi.feeder.pi2001)：
-                {"did": "1234567890", "siid": 2, "aiid": 1, "value": [2]} # 远程喂食2份
+                Ví dụ (xiaomi.feeder.pi2001):
+                {"did": "1234567890", "siid": 2, "aiid": 1, "value": [2]}
+                # cho ăn 2 phần từ xa
 
         Returns:
-            dict: 操作结果。
+            dict: Kết quả hành động.
         """
         uri = '/miotspec/action'
         data = {"params": data}
@@ -219,22 +224,22 @@ class mijiaAPI(object):
 
     def get_statistics(self, data: dict) -> list:
         """
-        获取设备的统计信息。
+        Lấy số liệu thống kê của thiết bị.
 
         Args:
-            data (dict): 请求参数，包含以下键：
-                - did: 设备ID，从get_devices_list获取
-                - key: siid.piid，表示要获取统计数据的属性
-                - data_type: 统计类型，可选值包括：
-                    - 'stat_hour_v3': 按小时统计
-                    - 'stat_day_v3': 按天统计
-                    - 'stat_week_v3': 按周统计
-                    - 'stat_month_v3': 按月统计
-                - limit: 返回的最大条目数，可选参数
-                - time_start: 开始时间戳，单位为秒
-                - time_end: 结束时间戳，单位为秒
+            data (dict): Tham số yêu cầu gồm:
+                - did: ID thiết bị
+                - key: ``siid.piid`` chỉ ra thuộc tính cần thống kê
+                - data_type: Loại thống kê, có thể là:
+                    - 'stat_hour_v3': theo giờ
+                    - 'stat_day_v3': theo ngày
+                    - 'stat_week_v3': theo tuần
+                    - 'stat_month_v3': theo tháng
+                - limit: Số mục tối đa trả về
+                - time_start: Thời điểm bắt đầu (timestamp, giây)
+                - time_end: Thời điểm kết thúc (timestamp, giây)
 
-                示例(lumi.acpartner.mcn04 的 power-consumption)：
+                Ví dụ (lumi.acpartner.mcn04 - power-consumption):
                 {
                     "did": "1234567890",
                     "key": "7.1",
@@ -242,10 +247,10 @@ class mijiaAPI(object):
                     "limit": 24,
                     "time_start": 1685548800,
                     "time_end": 1750694400,
-                } # 2023-06-01 00:00:00 到 2025-06-24 00:00:00 的月度统计数据
+                } # Dữ liệu theo tháng từ 2023-06-01 đến 2025-06-24
 
         Returns:
-            list: 统计信息列表。
+            list: Danh sách dữ liệu thống kê.
         """
         uri = '/v2/user/statistics'
         return self._post_process(post_data(self.session, self.ssecurity, uri, data))

@@ -14,13 +14,13 @@ logger = get_logger(__name__)
 class DevProp(object):
     def __init__(self, prop_dict: dict):
         """
-        初始化属性对象。
+        Khởi tạo đối tượng thuộc tính.
 
         Args:
-            prop_dict (dict): 属性字典。
+            prop_dict (dict): Từ điển mô tả thuộc tính.
 
         Raises:
-            ValueError: 如果属性类型不受支持。
+            ValueError: Nếu kiểu thuộc tính không được hỗ trợ.
         """
         self.name = prop_dict['name']
         self.desc = prop_dict['description']
@@ -35,10 +35,10 @@ class DevProp(object):
 
     def __str__(self):
         """
-        返回属性的字符串表示。
+        Trả về chuỗi biểu diễn của thuộc tính.
 
         Returns:
-            str: 属性的名称、描述、类型、读写权限、单位和范围。
+            str: Tên, mô tả, kiểu, quyền đọc/ghi, đơn vị và phạm vi.
         """
         lines = [
             f"  {self.name}: {self.desc}",
@@ -55,10 +55,10 @@ class DevProp(object):
 class DevAction(object):
     def __init__(self, act_dict: dict):
         """
-        初始化动作对象。
+        Khởi tạo đối tượng hành động.
 
         Args:
-            act_dict (dict): 动作字典。
+            act_dict (dict): Từ điển mô tả hành động.
         """
         self.name = act_dict['name']
         self.desc = act_dict['description']
@@ -66,10 +66,10 @@ class DevAction(object):
 
     def __str__(self):
         """
-        返回动作的字符串表示。
+        Trả về chuỗi biểu diễn của hành động.
 
         Returns:
-            str: 动作的名称和描述。
+            str: Tên và mô tả của hành động.
         """
         return f'  {self.name}: {self.desc}'
 
@@ -84,26 +84,29 @@ class mijiaDevice(object):
             sleep_time: Optional[Union[int, float]] = 0.5
     ):
         """
-        初始化设备对象。
+        Khởi tạo đối tượng thiết bị.
 
-        如果未提供设备信息，则根据设备名称获取设备信息。如果两者均未提供，则抛出异常。
-        如果同时提供了设备信息和设备名称，则以设备信息为准。
+        Nếu không cung cấp thông tin thiết bị, hệ thống sẽ tìm theo tên. Cần
+        cung cấp ``dev_info`` hoặc ``dev_name`` ít nhất một trong hai. Nếu cả hai
+        được cung cấp thì ưu tiên ``dev_info``.
 
         Args:
-            api (mijiaAPI): 米家API对象。
-            dev_info (dict, optional): 设备信息字典，从get_device_info获取。默认为None。
-            dev_name (str, optional): 设备名称，从get_devices_list获取。默认为None。
-            did (str, optional): 设备ID，如未指定，则需要在调用get/set时指定。默认为None。
-            sleep_time ([int, float], optional): 调用设备属性的间隔时间。默认为0.5秒。
+            api (mijiaAPI): Đối tượng API.
+            dev_info (dict, optional): Thông tin thiết bị từ ``get_device_info``.
+            dev_name (str, optional): Tên thiết bị từ ``get_devices_list``.
+            did (str, optional): ID thiết bị; nếu không cung cấp phải chỉ định
+            khi gọi ``get/set``.
+            sleep_time ([int, float], optional): Thời gian nghỉ giữa các lần gọi,
+            mặc định 0.5 giây.
 
         Raises:
-            RuntimeError: 如果dev_info和dev_name都未提供。
-            ValueError: 如果找不到指定设备或找到多个同名设备。
+            RuntimeError: Khi thiếu cả ``dev_info`` và ``dev_name``.
+            ValueError: Khi không tìm thấy thiết bị hoặc có nhiều thiết bị trùng tên.
 
         Note:
-            - 如果同时提供了dev_info和dev_name，则以dev_info为准。
-            - 如果只提供了dev_name，则根据名称自动获取设备信息。
-            - 如果只提供了dev_info，则直接使用该信息。
+            - Nếu cung cấp cả ``dev_info`` và ``dev_name`` sẽ ưu tiên ``dev_info``.
+            - Nếu chỉ có ``dev_name`` sẽ tự động tra cứu thông tin thiết bị.
+            - Nếu chỉ có ``dev_info`` sẽ dùng trực tiếp thông tin đó.
         """
         if dev_info is None and dev_name is None:
             raise RuntimeError("必须提供 'dev_info' 或 'dev_name' 中的一个参数。")
@@ -141,10 +144,10 @@ class mijiaDevice(object):
 
     def __str__(self) -> str:
         """
-        返回设备的字符串表示。
+        Trả về chuỗi biểu diễn của thiết bị.
 
         Returns:
-            str: 设备的属性和动作列表。
+            str: Danh sách thuộc tính và hành động.
         """
         prop_list_str = '\n'.join(filter(None, (str(v) for k, v in self.prop_list.items() if '_' not in k)))
         action_list_str = '\n'.join(map(str, self.action_list.values()))
@@ -154,19 +157,20 @@ class mijiaDevice(object):
 
     def set(self, name: str, value: Union[bool, int, float, str], did: Optional[str] = None) -> bool:
         """
-        设置设备的属性值。
+        Thiết lập giá trị thuộc tính cho thiết bị.
 
         Args:
-            name (str): 属性名称。
-            value (Union[bool, int, float, str]): 属性值。
-            did (str, optional): 设备ID。如未指定，则使用实例化时的did。默认为None。
+            name (str): Tên thuộc tính.
+            value (Union[bool, int, float, str]): Giá trị cần thiết lập.
+            did (str, optional): ID thiết bị; nếu không có sẽ dùng giá trị khi
+            khởi tạo.
 
         Returns:
-            bool: 执行结果（True/False）。
+            bool: ``True`` nếu thành công.
 
         Raises:
-            ValueError: 如果属性不存在、属性为只读或值无效。
-            RuntimeError: 如果设置属性失败。
+            ValueError: Khi thuộc tính không tồn tại, chỉ đọc hoặc giá trị không hợp lệ.
+            RuntimeError: Khi thao tác thất bại.
         """
         if did is None:
             did = self.did
@@ -238,18 +242,18 @@ class mijiaDevice(object):
 
     def get(self, name: str, did: Optional[str] = None) -> Union[bool, int, float, str]:
         """
-        获取设备的属性值。
+        Lấy giá trị thuộc tính của thiết bị.
 
         Args:
-            name (str): 属性名称。
-            did (str, optional): 设备ID。如未指定，则使用实例化时的did。默认为None。
+            name (str): Tên thuộc tính.
+            did (str, optional): ID thiết bị, mặc định dùng khi khởi tạo.
 
         Returns:
-            Union[bool, int, float, str]: 属性值。
+            Union[bool, int, float, str]: Giá trị thuộc tính.
 
         Raises:
-            ValueError: 如果未指定设备ID、属性不存在或属性为只写。
-            RuntimeError: 如果获取属性失败。
+            ValueError: Khi không có ID thiết bị, thuộc tính không tồn tại hoặc chỉ ghi.
+            RuntimeError: Khi không thể lấy được thuộc tính.
         """
         if did is None:
             did = self.did
@@ -275,14 +279,15 @@ class mijiaDevice(object):
 
     def __setattr__(self, name: str, value: Union[bool, int, float, str]) -> None:
         """
-        设置设备的属性值（通过对象属性方式，需在实例化时指定did）。
+        Thiết lập thuộc tính thông qua cú pháp truy cập thuộc tính của đối tượng
+        (yêu cầu đã chỉ định ``did`` khi khởi tạo).
 
         Args:
-            name (str): 属性名称。
-            value (Union[bool, int, float, str]): 属性值。
+            name (str): Tên thuộc tính.
+            value (Union[bool, int, float, str]): Giá trị.
 
         Raises:
-            RuntimeError: 如果设置属性失败。
+            RuntimeError: Nếu thiết lập thất bại.
         """
         if 'prop_list' in self.__dict__ and name in self.prop_list:
             if not self.set(name, value):
@@ -292,13 +297,14 @@ class mijiaDevice(object):
 
     def __getattr__(self, name: str) -> Union[bool, int, float, str]:
         """
-        获取设备的属性值（通过对象属性方式，需在实例化时指定did）。
+        Lấy thuộc tính thông qua cú pháp truy cập thuộc tính của đối tượng
+        (yêu cầu đã chỉ định ``did`` khi khởi tạo).
 
         Args:
-            name (str): 属性名称。
+            name (str): Tên thuộc tính.
 
         Returns:
-            Union[bool, int, float, str]: 属性值。
+            Union[bool, int, float, str]: Giá trị thuộc tính.
         """
         if 'prop_list' in self.__dict__ and name in self.prop_list:
             return self.get(name)
@@ -313,20 +319,21 @@ class mijiaDevice(object):
             **kwargs
     ) -> bool:
         """
-        运行设备动作。
+        Thực thi một hành động trên thiết bị.
 
         Args:
-            name (str): 动作名称。
-            did (Optional[str], optional): 设备ID。如未指定，则使用实例化时的did。默认为None。
-            value (Optional[Union[list, tuple]], optional): 动作参数。如动作不需要参数，则不需指定。默认为None。
-            **kwargs: 其它动作参数，如智能音箱的in参数[run_action('execute-text-directive', _in=['空调调至26度', True])]。
+            name (str): Tên hành động.
+            did (Optional[str], optional): ID thiết bị, mặc định dùng khi khởi tạo.
+            value (Optional[Union[list, tuple]], optional): Tham số của hành động.
+            **kwargs: Tham số bổ sung, ví dụ loa thông minh với tham số
+            ``in`` [run_action('execute-text-directive', _in=['bật đèn', True])].
 
         Returns:
-            bool: 执行结果（True/False）。
+            bool: ``True`` nếu thành công.
 
         Raises:
-            ValueError: 如果未指定设备ID、动作不存在或参数无效。
-            RuntimeError: 如果运行动作失败。
+            ValueError: Khi thiếu ID thiết bị, hành động không tồn tại hoặc tham số sai.
+            RuntimeError: Khi thực thi hành động thất bại.
         """
         if did is None:
             did = self.did
@@ -360,17 +367,18 @@ class mijiaDevice(object):
 
 def get_device_info(device_model: str, cache_path: Optional[str] = os.path.join(os.path.expanduser("~"), ".config/mijia-api")) -> dict:
     """
-    获取设备信息，用于初始化mijiaDevice对象。
+    Lấy thông tin thiết bị để khởi tạo ``mijiaDevice``.
 
     Args:
-        device_model (str): 设备型号，从get_devices_list获取。
-        cache_path (str, optional): 缓存文件路径。默认为~/.config/mijia-api，设置为None则不使用缓存。
+        device_model (str): Model thiết bị từ ``get_devices_list``.
+        cache_path (str, optional): Đường dẫn cache, mặc định
+        ``~/.config/mijia-api``. Đặt ``None`` để bỏ cache.
 
     Returns:
-        dict: 设备信息字典。
+        dict: Từ điển thông tin thiết bị.
 
     Raises:
-        RuntimeError: 如果获取设备信息失败。
+        RuntimeError: Nếu lấy thông tin thiết bị thất bại.
     """
     if cache_path is not None:
         cache_file = os.path.join(cache_path, f'{device_model}.json')

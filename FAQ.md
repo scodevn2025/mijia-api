@@ -1,19 +1,19 @@
-# 常见问题
+# Câu hỏi thường gặp
 
-### 账号密码登录失败
+### Đăng nhập bằng tài khoản mật khẩu thất bại
 
-现在登录似乎100%遇到验证码，建议使用扫码登录。
+Hiện tại việc đăng nhập dường như 100% gặp phải mã xác nhận, khuyến nghị sử dụng đăng nhập bằng mã QR.
 
-### XXX设备的XXX如何获取/设置？
+### Làm thế nào để lấy/thiết lập XXX của thiết bị XXX?
 
-我拥有的设备有限，无法保证能解答这类问题，但也欢迎提交 [issue](https://github.com/Do1e/mijia-api/issues)，可能需要你将设备共享给我进行抓包或者自行抓包给我提供请求和响应，提供har文件的话注意自行删除cookie等敏感信息。
+Tôi sở hữu thiết bị có hạn, không thể đảm bảo có thể giải đáp loại câu hỏi này, nhưng cũng hoan nghênh gửi [issue](https://github.com/Do1e/mijia-api/issues), có thể cần bạn chia sẻ thiết bị cho tôi để bắt gói tin hoặc tự bắt gói tin cung cấp cho tôi request và response, nếu cung cấp file har thì lưu ý tự xóa cookie và các thông tin nhạy cảm khác.
 
-### 如何抓包？
+### Làm thế nào để bắt gói tin?
 
-小米官方给了一个[抓包教程](https://iot.mi.com/new/doc/accesses/direct-access/extension-development/troubleshooting/packet_capture)，我没试过，不确定是否能行，如果抓包成功数据是加密的，可以使用 [demos/decrypt.py](demos/decrypt.py) 解密。
+Xiaomi chính thức đã cung cấp một [hướng dẫn bắt gói tin](https://iot.mi.com/new/doc/accesses/direct-access/extension-development/troubleshooting/packet_capture), tôi chưa thử, không chắc có được hay không, nếu bắt gói tin thành công mà dữ liệu bị mã hóa, có thể sử dụng [demos/decrypt.py](demos/decrypt.py) để giải mã.
 
-我自己的解决方案是使用一个获取了root的手机，安装 [reqable](https://reqable.com/zh-CN/) 进行抓包，导出 HAR 文件后使用 [demos/decrypt_har.py](demos/decrypt_har.py) 解密。
+Giải pháp của tôi là sử dụng điện thoại đã root, cài đặt [reqable](https://reqable.com/zh-CN/) để bắt gói tin, sau khi xuất file HAR sử dụng [demos/decrypt_har.py](demos/decrypt_har.py) để giải mã.
 
-### 是否可以支持设备回调？
+### Có thể hỗ trợ callback thiết bị không?
 
-由于[ha_xiaomi_home 开源许可证](https://github.com/XiaoMi/ha_xiaomi_home/blob/main/LICENSE.md)的要求，将不会支持相关功能。
+Do yêu cầu của [giấy phép mã nguồn mở ha_xiaomi_home](https://github.com/XiaoMi/ha_xiaomi_home/blob/main/LICENSE.md), sẽ không hỗ trợ các chức năng liên quan.

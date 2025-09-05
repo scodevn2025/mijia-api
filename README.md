@@ -121,40 +121,40 @@ mijiaDevice(api: mijiaAPI, dev_info: dict = None, dev_name: str = None, did: str
   - **Lưu ý**: Nếu đã cung cấp `dev_info`, thì không cần cung cấp `dev_name`
 * `dev_name`: Tên thiết bị, dùng để tự động tìm thiết bị (tùy chọn)
   - 例如：`dev_name='台灯'`，会自动查找名称包含“台灯”的设备
-  - **注意**：如果提供了 `dev_name`，则不需要提供 `dev_info` 和 `did`
-* `did`：设备ID，便于直接通过属性名访问（可选）
-  - 如果初始化时未提供，无法使用属性样式访问，需要使用 `get()` 和 `set()` 方法指定 `did`
-  - 使用 `dev_name` 初始化时，`did` 会自动获取
-* `sleep_time`：属性操作间隔时间，单位秒（默认0.5秒）
-  - **重要**：设置属性后立即获取可能不符合预期，需设置适当延迟
+  - **Lưu ý**: Nếu đã cung cấp `dev_name`, thì không cần cung cấp `dev_info` và `did`
+* `did`: ID thiết bị, thuận tiện cho việc truy cập trực tiếp thông qua tên thuộc tính (tùy chọn)
+  - Nếu không cung cấp khi khởi tạo, không thể sử dụng kiểu truy cập thuộc tính, cần sử dụng phương thức `get()` và `set()` chỉ định `did`
+  - Khi khởi tạo bằng `dev_name`, `did` sẽ được lấy tự động
+* `sleep_time`: Thời gian khoảng cách thao tác thuộc tính, đơn vị giây (mặc định 0.5 giây)
+  - **Quan trọng**: Lấy thuộc tính ngay sau khi thiết lập có thể không đúng như mong đợi, cần thiết lập độ trễ phù hợp
 
-#### 使用方法控制：
+#### Sử dụng phương thức điều khiển:
 
-* `set(name: str, value: Union[bool, int, float, str], did: Optional[str] = None) -> bool`：设置设备属性
-* `get(name: str, did: Optional[str] = None) -> Union[bool, int, float, str]`：获取设备属性
-* `run_action(name: str, did: Optional[str] = None, value: Optional[Union[list, tuple]] = None, **kwargs) -> bool`：执行设备动作
+* `set(name: str, value: Union[bool, int, float, str], did: Optional[str] = None) -> bool`: Thiết lập thuộc tính thiết bị
+* `get(name: str, did: Optional[str] = None) -> Union[bool, int, float, str]`: Lấy thuộc tính thiết bị
+* `run_action(name: str, did: Optional[str] = None, value: Optional[Union[list, tuple]] = None, **kwargs) -> bool`: Thực hiện hành động thiết bị
 
-#### 属性样式访问：
+#### Truy cập kiểu thuộc tính:
 
-需在初始化时提供 `did` 或者使用 `dev_name` 初始化
+Cần cung cấp `did` khi khởi tạo hoặc sử dụng `dev_name` để khởi tạo
 
 ```python
-# 示例：控制台灯
+# Ví dụ: Điều khiển đèn bàn
 device = mijiaDevice(api, dev_name='台灯')
-device.on = True                 # 打开灯
-device.brightness = 60           # 设置亮度
-current_temp = device.color_temperature  # 获取色温
+device.on = True                 # Bật đèn
+device.brightness = 60           # Thiết lập độ sáng
+current_temp = device.color_temperature  # Lấy nhiệt độ màu
 ```
 
-属性名规则：使用下划线替代连字符（如 `color-temperature` 变为 `color_temperature`）
+Quy tắc tên thuộc tính: Sử dụng dấu gạch dưới thay thế dấu gạch ngang (như `color-temperature` thành `color_temperature`)
 
-#### 示例：
+#### Ví dụ:
 
-* 使用自然语言让小爱音箱执行：[demos/test_devices_wifispeaker.py](demos/test_devices_wifispeaker.py)
-* 通过属性直接控制台灯：[demos/test_devices_v2_light.py](demos/test_devices_v2_light.py)
+* Sử dụng ngôn ngữ tự nhiên để XiaoAi thực hiện: [demos/test_devices_wifispeaker.py](demos/test_devices_wifispeaker.py)
+* Điều khiển đèn bàn trực tiếp thông qua thuộc tính: [demos/test_devices_v2_light.py](demos/test_devices_v2_light.py)
 
 ### Mijia API CLI
-`mijiaAPI` 还提供了一个命令行工具，可以直接在终端中使用。
+`mijiaAPI` cũng cung cấp một công cụ dòng lệnh, có thể sử dụng trực tiếp trong terminal.
 
 ```
 > python -m mijiaAPI --help
@@ -168,26 +168,26 @@ Mijia API CLI
 
 positional arguments:
   {get,set}
-    get                 获取设备属性
-    set                 设置设备属性
+    get                 Lấy thuộc tính thiết bị
+    set                 Thiết lập thuộc tính thiết bị
 
 options:
   -h, --help            show this help message and exit
   -p AUTH_PATH, --auth_path AUTH_PATH
-                        认证文件保存路径，默认保存在~/.config/mijia-api-auth.json
-  -l, --list_devices    列出所有米家设备
-  --list_homes          列出家庭列表
-  --list_scenes         列出场景列表
+                        Đường dẫn lưu file xác thực, mặc định lưu tại ~/.config/mijia-api-auth.json
+  -l, --list_devices    Liệt kê tất cả thiết bị Mijia
+  --list_homes          Liệt kê danh sách gia đình
+  --list_scenes         Liệt kê danh sách kịch bản
   --list_consumable_items
-                        列出耗材列表
+                        Liệt kê danh sách vật tư tiêu hao
   --run_scene SCENE_ID/SCENE_NAME [SCENE_ID/SCENE_NAME ...]
-                        运行场景，指定场景ID或名称
+                        Chạy kịch bản, chỉ định ID kịch bản hoặc tên
   --get_device_info DEVICE_MODEL
-                        获取设备信息，指定设备model，先使用 --list_devices 获取
-  --run PROMPT          使用自然语言描述你的需求，如果你有小爱音箱的话
+                        Lấy thông tin thiết bị, chỉ định model thiết bị, sử dụng --list_devices trước để lấy
+  --run PROMPT          Sử dụng ngôn ngữ tự nhiên mô tả nhu cầu của bạn, nếu bạn có loa thông minh XiaoAi
   --wifispeaker_name WIFISPEAKER_NAME
-                        指定小爱音箱名称，默认是获取到的第一个小爱音箱
-  --quiet               小爱音箱静默执行
+                        Chỉ định tên loa thông minh XiaoAi, mặc định là loa đầu tiên được tìm thấy
+  --quiet               Loa thông minh XiaoAi thực hiện im lặng
 ```
 
 ```
@@ -198,10 +198,10 @@ usage: __main__.py get [-h] [-p AUTH_PATH] --dev_name DEV_NAME --prop_name PROP_
 options:
   -h, --help            show this help message and exit
   -p AUTH_PATH, --auth_path AUTH_PATH
-                        认证文件保存路径，默认保存在~/.config/mijia-api-auth.json
-  --dev_name DEV_NAME   设备名称，指定为米家APP中设定的名称
+                        Đường dẫn lưu file xác thực, mặc định lưu tại ~/.config/mijia-api-auth.json
+  --dev_name DEV_NAME   Tên thiết bị, chỉ định theo tên đã đặt trong ứng dụng Mijia
   --prop_name PROP_NAME
-                        属性名称，先使用 --get_device_info 获取
+                        Tên thuộc tính, sử dụng --get_device_info trước để lấy
 ```
 
 ```
@@ -212,44 +212,44 @@ usage: __main__.py set [-h] [-p AUTH_PATH] --dev_name DEV_NAME --prop_name PROP_
 options:
   -h, --help            show this help message and exit
   -p AUTH_PATH, --auth_path AUTH_PATH
-                        认证文件保存路径，默认保存在~/.config/mijia-api-auth.json
-  --dev_name DEV_NAME   设备名称，指定为米家APP中设定的名称
+                        Đường dẫn lưu file xác thực, mặc định lưu tại ~/.config/mijia-api-auth.json
+  --dev_name DEV_NAME   Tên thiết bị, chỉ định theo tên đã đặt trong ứng dụng Mijia
   --prop_name PROP_NAME
-                        属性名称，先使用 --get_device_info 获取
-  --value VALUE         需要设定的属性值
+                        Tên thuộc tính, sử dụng --get_device_info trước để lấy
+  --value VALUE         Giá trị thuộc tính cần thiết lập
 ```
 
-或者直接使用`uvx`忽略安装步骤：
+Hoặc sử dụng trực tiếp `uvx` bỏ qua bước cài đặt:
 
 ```bash
 uvx mijiaAPI --help
 ```
 
-#### 示例：
+#### Ví dụ:
 
 ```bash
-mijiaAPI -l # 列出所有米家设备
-mijiaAPI --list_homes # 列出家庭列表
-mijiaAPI --list_scenes # 列出场景列表
-mijiaAPI --list_consumable_items # 列出耗材列表
-mijiaAPI --run_scene SCENE_ID/SCENE_NAME # 运行场景，指定场景ID或名称
-mijiaAPI --get_device_info DEVICE_MODEL # 获取设备信息，指定设备model，先使用 --list_devices 获取
-mijiaAPI get --dev_name DEV_NAME --prop_name PROP_NAME # 获取设备属性
-mijiaAPI set --dev_name DEV_NAME --prop_name PROP_NAME --value VALUE # 设置设备属性
+mijiaAPI -l # Liệt kê tất cả thiết bị Mijia
+mijiaAPI --list_homes # Liệt kê danh sách gia đình
+mijiaAPI --list_scenes # Liệt kê danh sách kịch bản
+mijiaAPI --list_consumable_items # Liệt kê danh sách vật tư tiêu hao
+mijiaAPI --run_scene SCENE_ID/SCENE_NAME # Chạy kịch bản, chỉ định ID kịch bản hoặc tên
+mijiaAPI --get_device_info DEVICE_MODEL # Lấy thông tin thiết bị, chỉ định model thiết bị, sử dụng --list_devices trước để lấy
+mijiaAPI get --dev_name DEV_NAME --prop_name PROP_NAME # Lấy thuộc tính thiết bị
+mijiaAPI set --dev_name DEV_NAME --prop_name PROP_NAME --value VALUE # Thiết lập thuộc tính thiết bị
 mijiaAPI --run 明天天气如何
 mijiaAPI --run 打开台灯并将亮度调至最大 --quiet
 ```
 
-## 致谢
+## Lời cảm ơn
 
 * [janzlan/mijia-api](https://gitee.com/janzlan/mijia-api/tree/master)
 
-## 开源许可
+## Giấy phép mã nguồn mở
 
-本项目采用 [GPL-3.0](LICENSE) 开源许可证。
+Dự án này sử dụng giấy phép mã nguồn mở [GPL-3.0](LICENSE).
 
-## 免责声明
+## Tuyên bố miễn trừ trách nhiệm
 
-* 本项目仅供学习交流使用，不得用于商业用途，如有侵权请联系删除
-* 用户使用本项目所产生的任何后果，需自行承担风险
-* 开发者不对使用本项目产生的任何直接或间接损失负责
+* Dự án này chỉ dành cho mục đích học tập và trao đổi, không được sử dụng cho mục đích thương mại, nếu có vi phạm bản quyền vui lòng liên hệ để xóa
+* Người dùng sử dụng dự án này phải tự chịu rủi ro cho bất kỳ hậu quả nào phát sinh
+* Nhà phát triển không chịu trách nhiệm về bất kỳ thiệt hại trực tiếp hoặc gián tiếp nào phát sinh từ việc sử dụng dự án này

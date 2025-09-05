@@ -1,21 +1,21 @@
-# 更新日志
+# Nhật ký cập nhật
 
-本文档记录了项目的v1.3.7以来的重要变更。
+Tài liệu này ghi lại các thay đổi quan trọng của dự án từ v1.3.7 trở đi.
 
 ## [2.0.1](https://github.com/Do1e/mijia-api/compare/v2.0.0...v2.0.1) - 2025-06-29
 ### bugfix
-* 处理一个家庭中超过200个设备的情况，修复了`get_devices_list`方法可能无法获取所有设备的问题
+* Xử lý trường hợp có hơn 200 thiết bị trong một gia đình, sửa lỗi phương thức `get_devices_list` có thể không lấy được tất cả thiết bị
 ### improvement
-* 所有打印内容均使用中文
+* Tất cả nội dung in đều sử dụng tiếng Trung
 
 ## [2.0.0](https://github.com/Do1e/mijia-api/compare/v1.5.0...v2.0.0) - 2025-06-27
-#### 此版本有多项破坏性变更，请在升级后参考下述说明修复
+#### Phiên bản này có nhiều thay đổi breaking changes, vui lòng tham khảo hướng dẫn dưới đây để sửa chữa sau khi nâng cấp
 ### new feature
-* 新增API：`get_statistics`，用于获取设备的统计信息，使用方法参见[demos/test_get_statistics.py](demos/test_get_statistics.py)
-* 新增文件[demos/decrypt.py](demos/decrypt.py)和[demos/decrypt_har.py](demos/decrypt_har.py)，用于解密米家APP抓包
-* `get_homes_list`支持获取共享家庭
-* `get_consumable_items`支持获取共享家庭的耗材列表，需要额外指定`owner_id`参数
-* `get_devices_list`支持获取共享家庭的设备列表
+* Thêm API: `get_statistics`, dùng để lấy thông tin thống kê thiết bị, cách sử dụng xem [demos/test_get_statistics.py](demos/test_get_statistics.py)
+* Thêm file [demos/decrypt.py](demos/decrypt.py) và [demos/decrypt_har.py](demos/decrypt_har.py), dùng để giải mã gói tin ứng dụng Mijia
+* `get_homes_list` hỗ trợ lấy gia đình chia sẻ
+* `get_consumable_items` hỗ trợ lấy danh sách vật tư tiêu hao của gia đình chia sẻ, cần chỉ định thêm tham số `owner_id`
+* `get_devices_list` hỗ trợ lấy danh sách thiết bị của gia đình chia sẻ
 ### improvement
 * 认证文件保存`cUserId`，可作为`userId`的替代，暂时未使用
 * **此版本彻底移除了`mijiaDevices`，请及时替换为`mijiaDevice`**

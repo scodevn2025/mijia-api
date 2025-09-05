@@ -1,96 +1,96 @@
 # mijiaAPI
 
-小米米家设备的API，可以使用代码直接控制米家设备。
+API cho thiết bị Xiaomi Mijia, cho phép điều khiển trực tiếp các thiết bị Mijia bằng mã lệnh.
 
 [![GitHub](https://img.shields.io/badge/GitHub-Do1e%2Fmijia--api-blue)](https://github.com/Do1e/mijia-api)
 [![PyPI](https://img.shields.io/badge/PyPI-mijiaAPI-blue)](https://pypi.org/project/mijiaAPI/)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-green.svg)](https://opensource.org/licenses/GPL-3.0)
 
-## ⚠️ 重要提醒
+## ⚠️ Lưu ý quan trọng
 
-**自 v1.5.0 版本以来，本项目包含多项破坏性变更！**
+**Từ phiên bản v1.5.0 trở đi, dự án này chứa nhiều thay đổi không tương thích ngược!**
 
-如果您正在从旧版本升级，请务必查看 [CHANGELOG.md](CHANGELOG.md) 以了解详细的变更内容和迁移指南。
+Nếu bạn đang nâng cấp từ phiên bản cũ, vui lòng xem [CHANGELOG.md](CHANGELOG.md) để hiểu chi tiết về các thay đổi và hướng dẫn di chuyển.
 
-## 安装
+## Cài đặt
 
-### 从 PyPI 安装（推荐）
+### Cài đặt từ PyPI (Khuyến nghị)
 
 ```bash
 pip install mijiaAPI
 ```
 
-### 从源码安装
+### Cài đặt từ mã nguồn
 
 ```bash
 git clone https://github.com/Do1e/mijia-api.git
 cd mijia-api
 pip install .
-# Or `pip install -e .` for editable mode
+# Hoặc `pip install -e .` cho chế độ có thể chỉnh sửa
 ```
 
-或者使用 poetry：
+Hoặc sử dụng poetry:
 
 ```bash
 poetry install
 ```
 
 ### aur
-如果你使用 Arch Linux 或基于 Arch 的发行版，可以通过 AUR 安装：
+Nếu bạn sử dụng Arch Linux hoặc các distro dựa trên Arch, có thể cài đặt qua AUR:
 
 ```bash
 yay -S python-mijia-api
 ```
 
-## 使用
+## Sử dụng
 
-使用实例可以参考 `demos` 文件夹下的示例代码，以下是基本使用说明。
+Ví dụ sử dụng có thể tham khảo trong thư mục `demos`, dưới đây là hướng dẫn sử dụng cơ bản.
 
-### 登录
+### Đăng nhập
 
-`mijiaLogin`：登录小米账号，获取控制设备必须的 `userId`, `ssecurity`, `deviceId`, `serviceToken` 等信息。
+`mijiaLogin`: Đăng nhập tài khoản Xiaomi để lấy thông tin cần thiết như `userId`, `ssecurity`, `deviceId`, `serviceToken` để điều khiển thiết bị.
 
-#### 登录方法：
+#### Phương thức đăng nhập:
 
-* `QRlogin() -> dict`：扫描二维码登录（推荐）
-  - 在支持 tty 的终端直接显示二维码
-  - 或在当前目录查看生成的 `qr.png` 文件
+* `QRlogin() -> dict`: Đăng nhập bằng mã QR (Khuyến nghị)
+  - Hiển thị mã QR trực tiếp trên terminal hỗ trợ tty
+  - Hoặc xem file `qr.png` được tạo trong thư mục hiện tại
   
-* `login(username: str, password: str) -> dict`：账号密码登录
-  - **注意：此方法大概率需要手机验证码验证，建议优先使用二维码登录**
+* `login(username: str, password: str) -> dict`: Đăng nhập bằng tài khoản và mật khẩu
+  - **Lưu ý: Phương thức này rất có thể cần xác thực bằng mã điện thoại, khuyến nghị ưu tiên sử dụng đăng nhập mã QR**
 
 
 ### API
 
-`mijiaAPI`：核心API实现，使用 `mijiaLogin` 登录后返回的信息进行初始化。
+`mijiaAPI`: Triển khai API cốt lõi, được khởi tạo bằng thông tin trả về từ `mijiaLogin`.
 
-#### 初始化与状态检查：
+#### Khởi tạo và kiểm tra trạng thái:
 
-* `__init__(auth_data: dict)`：初始化 API 对象
-  - `auth_data` 必须包含 `userId`, `deviceId`, `ssecurity`, `serviceToken` 四个字段
+* `__init__(auth_data: dict)`: Khởi tạo đối tượng API
+  - `auth_data` phải chứa 4 trường `userId`, `deviceId`, `ssecurity`, `serviceToken`
 
-* `available -> bool`：检查传入的 `auth_data` 是否有效，根据 `auth_data` 中的 `expireTime` 字段判断
+* `available -> bool`: Kiểm tra xem `auth_data` được truyền vào có hợp lệ không, dựa trên trường `expireTime` trong `auth_data`
 
-#### 设备与场景获取与控制：
+#### Lấy và điều khiển thiết bị & cảnh:
 
-下述方法可参考 [demos/test_apis.py](demos/test_apis.py) 中的示例。
+Các phương thức dưới đây có thể tham khảo ví dụ trong [demos/test_apis.py](demos/test_apis.py).
 
-* `get_devices_list() -> list`：获取设备列表
-* `get_homes_list() -> list`：获取家庭列表（包含房间信息）
-* `get_scenes_list(home_id: str) -> list`：获取手动场景列表
-  - 在米家 App 中通过 **米家→添加→手动控制** 设置
-* `run_scene(scene_id: str) -> bool`：运行指定场景
-* `get_consumable_items(home_id: str, owner_id: Optional[int] = None) -> list`：获取设备的耗材信息，如果是共享家庭，需要额外指定 `owner_id` 参数
-* `get_devices_prop(data: list) -> list`：获取设备属性
-* `set_devices_prop(data: list) -> list`：设置设备属性
-* `run_action(data: dict) -> dict`：执行设备的特定动作
-* `get_statistics(data: dict) -> list`：获取设备的统计信息，如空调每个月的耗电量，参考 [demos/test_get_statistics.py](demos/test_get_statistics.py)
+* `get_devices_list() -> list`: Lấy danh sách thiết bị
+* `get_homes_list() -> list`: Lấy danh sách nhà (bao gồm thông tin phòng)
+* `get_scenes_list(home_id: str) -> list`: Lấy danh sách cảnh thủ công
+  - Được thiết lập trong ứng dụng Mijia qua **Mijia → Thêm → Điều khiển thủ công**
+* `run_scene(scene_id: str) -> bool`: Chạy cảnh được chỉ định
+* `get_consumable_items(home_id: str, owner_id: Optional[int] = None) -> list`: Lấy thông tin vật tư tiêu hao của thiết bị, nếu là nhà chia sẻ, cần chỉ định thêm tham số `owner_id`
+* `get_devices_prop(data: list) -> list`: Lấy thuộc tính thiết bị
+* `set_devices_prop(data: list) -> list`: Thiết lập thuộc tính thiết bị
+* `run_action(data: dict) -> dict`: Thực hiện hành động cụ thể của thiết bị
+* `get_statistics(data: dict) -> list`: Lấy thông tin thống kê của thiết bị, như lượng điện tiêu thụ hàng tháng của máy lạnh, tham khảo [demos/test_get_statistics.py](demos/test_get_statistics.py)
 
-设备属性和动作的相关参数（`siid`, `piid`, `aiid`）可以从 [米家产品库](https://home.miot-spec.com) 查询：
-* 访问 `https://home.miot-spec.com/spec/{model}`（`model` 在设备列表中获取）
-* 例如：[米家台灯 1S](https://home.miot-spec.com/spec/yeelink.light.lamp4)
+Các tham số liên quan đến thuộc tính và hành động của thiết bị (`siid`, `piid`, `aiid`) có thể được tra cứu từ [Thư viện sản phẩm Mijia](https://home.miot-spec.com):
+* Truy cập `https://home.miot-spec.com/spec/{model}` (`model` được lấy từ danh sách thiết bị)
+* Ví dụ: [Đèn bàn Mijia 1S](https://home.miot-spec.com/spec/yeelink.light.lamp4)
 
-**注意**：并非所有米家产品库中列出的方法都可用，需要自行测试验证。
+**Lưu ý**: Không phải tất cả phương thức được liệt kê trong thư viện sản phẩm Mijia đều có thể sử dụng, cần tự kiểm tra và xác minh.
 
 ### 设备信息获取
 
@@ -128,33 +128,33 @@ mijiaDevice(api: mijiaAPI, dev_info: dict = None, dev_name: str = None, did: str
 * `sleep_time`：属性操作间隔时间，单位秒（默认0.5秒）
   - **重要**：设置属性后立即获取可能不符合预期，需设置适当延迟
 
-#### 使用方法控制：
+#### Điều khiển bằng phương thức:
 
-* `set(name: str, value: Union[bool, int, float, str], did: Optional[str] = None) -> bool`：设置设备属性
-* `get(name: str, did: Optional[str] = None) -> Union[bool, int, float, str]`：获取设备属性
-* `run_action(name: str, did: Optional[str] = None, value: Optional[Union[list, tuple]] = None, **kwargs) -> bool`：执行设备动作
+* `set(name: str, value: Union[bool, int, float, str], did: Optional[str] = None) -> bool`: Thiết lập thuộc tính thiết bị
+* `get(name: str, did: Optional[str] = None) -> Union[bool, int, float, str]`: Lấy thuộc tính thiết bị
+* `run_action(name: str, did: Optional[str] = None, value: Optional[Union[list, tuple]] = None, **kwargs) -> bool`: Thực hiện hành động thiết bị
 
-#### 属性样式访问：
+#### Truy cập kiểu thuộc tính:
 
-需在初始化时提供 `did` 或者使用 `dev_name` 初始化
+Cần cung cấp `did` khi khởi tạo hoặc sử dụng khởi tạo `dev_name`
 
 ```python
-# 示例：控制台灯
-device = mijiaDevice(api, dev_name='台灯')
-device.on = True                 # 打开灯
-device.brightness = 60           # 设置亮度
-current_temp = device.color_temperature  # 获取色温
+# Ví dụ: điều khiển đèn bàn
+device = mijiaDevice(api, dev_name='Đèn bàn')
+device.on = True                 # Bật đèn
+device.brightness = 60           # Thiết lập độ sáng
+current_temp = device.color_temperature  # Lấy nhiệt độ màu
 ```
 
-属性名规则：使用下划线替代连字符（如 `color-temperature` 变为 `color_temperature`）
+Quy tắc tên thuộc tính: Sử dụng dấu gạch dưới thay thế dấu gạch ngang (như `color-temperature` thành `color_temperature`)
 
-#### 示例：
+#### Ví dụ:
 
-* 使用自然语言让小爱音箱执行：[demos/test_devices_wifispeaker.py](demos/test_devices_wifispeaker.py)
-* 通过属性直接控制台灯：[demos/test_devices_v2_light.py](demos/test_devices_v2_light.py)
+* Sử dụng ngôn ngữ tự nhiên để điều khiển loa thông minh Xiao Ai: [demos/test_devices_wifispeaker.py](demos/test_devices_wifispeaker.py)
+* Điều khiển trực tiếp đèn bàn thông qua thuộc tính: [demos/test_devices_v2_light.py](demos/test_devices_v2_light.py)
 
 ### Mijia API CLI
-`mijiaAPI` 还提供了一个命令行工具，可以直接在终端中使用。
+`mijiaAPI` cũng cung cấp một công cụ dòng lệnh, có thể sử dụng trực tiếp trong terminal.
 
 ```
 > python -m mijiaAPI --help
@@ -168,26 +168,26 @@ Mijia API CLI
 
 positional arguments:
   {get,set}
-    get                 获取设备属性
-    set                 设置设备属性
+    get                 Lấy thuộc tính thiết bị
+    set                 Thiết lập thuộc tính thiết bị
 
 options:
   -h, --help            show this help message and exit
   -p AUTH_PATH, --auth_path AUTH_PATH
-                        认证文件保存路径，默认保存在~/.config/mijia-api-auth.json
-  -l, --list_devices    列出所有米家设备
-  --list_homes          列出家庭列表
-  --list_scenes         列出场景列表
+                        Đường dẫn lưu file xác thực, mặc định lưu tại ~/.config/mijia-api-auth.json
+  -l, --list_devices    Liệt kê tất cả thiết bị Mijia
+  --list_homes          Liệt kê danh sách nhà
+  --list_scenes         Liệt kê danh sách cảnh
   --list_consumable_items
-                        列出耗材列表
+                        Liệt kê danh sách vật tư tiêu hao
   --run_scene SCENE_ID/SCENE_NAME [SCENE_ID/SCENE_NAME ...]
-                        运行场景，指定场景ID或名称
+                        Chạy cảnh, chỉ định ID cảnh hoặc tên cảnh
   --get_device_info DEVICE_MODEL
-                        获取设备信息，指定设备model，先使用 --list_devices 获取
-  --run PROMPT          使用自然语言描述你的需求，如果你有小爱音箱的话
+                        Lấy thông tin thiết bị, chỉ định model thiết bị, sử dụng --list_devices để lấy trước
+  --run PROMPT          Sử dụng ngôn ngữ tự nhiên mô tả nhu cầu của bạn, nếu bạn có loa thông minh Xiao Ai
   --wifispeaker_name WIFISPEAKER_NAME
-                        指定小爱音箱名称，默认是获取到的第一个小爱音箱
-  --quiet               小爱音箱静默执行
+                        Chỉ định tên loa thông minh Xiao Ai, mặc định là loa Xiao Ai đầu tiên được tìm thấy
+  --quiet               Loa Xiao Ai thực hiện im lặng
 ```
 
 ```
@@ -198,10 +198,10 @@ usage: __main__.py get [-h] [-p AUTH_PATH] --dev_name DEV_NAME --prop_name PROP_
 options:
   -h, --help            show this help message and exit
   -p AUTH_PATH, --auth_path AUTH_PATH
-                        认证文件保存路径，默认保存在~/.config/mijia-api-auth.json
-  --dev_name DEV_NAME   设备名称，指定为米家APP中设定的名称
+                        Đường dẫn lưu file xác thực, mặc định lưu tại ~/.config/mijia-api-auth.json
+  --dev_name DEV_NAME   Tên thiết bị, chỉ định tên được thiết lập trong ứng dụng Mijia
   --prop_name PROP_NAME
-                        属性名称，先使用 --get_device_info 获取
+                        Tên thuộc tính, sử dụng --get_device_info để lấy trước
 ```
 
 ```
@@ -212,44 +212,44 @@ usage: __main__.py set [-h] [-p AUTH_PATH] --dev_name DEV_NAME --prop_name PROP_
 options:
   -h, --help            show this help message and exit
   -p AUTH_PATH, --auth_path AUTH_PATH
-                        认证文件保存路径，默认保存在~/.config/mijia-api-auth.json
-  --dev_name DEV_NAME   设备名称，指定为米家APP中设定的名称
+                        Đường dẫn lưu file xác thực, mặc định lưu tại ~/.config/mijia-api-auth.json
+  --dev_name DEV_NAME   Tên thiết bị, chỉ định tên được thiết lập trong ứng dụng Mijia
   --prop_name PROP_NAME
-                        属性名称，先使用 --get_device_info 获取
-  --value VALUE         需要设定的属性值
+                        Tên thuộc tính, sử dụng --get_device_info để lấy trước
+  --value VALUE         Giá trị thuộc tính cần thiết lập
 ```
 
-或者直接使用`uvx`忽略安装步骤：
+Hoặc sử dụng trực tiếp `uvx` bỏ qua bước cài đặt:
 
 ```bash
 uvx mijiaAPI --help
 ```
 
-#### 示例：
+#### Ví dụ:
 
 ```bash
-mijiaAPI -l # 列出所有米家设备
-mijiaAPI --list_homes # 列出家庭列表
-mijiaAPI --list_scenes # 列出场景列表
-mijiaAPI --list_consumable_items # 列出耗材列表
-mijiaAPI --run_scene SCENE_ID/SCENE_NAME # 运行场景，指定场景ID或名称
-mijiaAPI --get_device_info DEVICE_MODEL # 获取设备信息，指定设备model，先使用 --list_devices 获取
-mijiaAPI get --dev_name DEV_NAME --prop_name PROP_NAME # 获取设备属性
-mijiaAPI set --dev_name DEV_NAME --prop_name PROP_NAME --value VALUE # 设置设备属性
-mijiaAPI --run 明天天气如何
-mijiaAPI --run 打开台灯并将亮度调至最大 --quiet
+mijiaAPI -l # Liệt kê tất cả thiết bị Mijia
+mijiaAPI --list_homes # Liệt kê danh sách nhà
+mijiaAPI --list_scenes # Liệt kê danh sách cảnh
+mijiaAPI --list_consumable_items # Liệt kê danh sách vật tư tiêu hao
+mijiaAPI --run_scene SCENE_ID/SCENE_NAME # Chạy cảnh, chỉ định ID cảnh hoặc tên cảnh
+mijiaAPI --get_device_info DEVICE_MODEL # Lấy thông tin thiết bị, chỉ định model thiết bị, sử dụng --list_devices để lấy trước
+mijiaAPI get --dev_name DEV_NAME --prop_name PROP_NAME # Lấy thuộc tính thiết bị
+mijiaAPI set --dev_name DEV_NAME --prop_name PROP_NAME --value VALUE # Thiết lập thuộc tính thiết bị
+mijiaAPI --run Thời tiết ngày mai như thế nào
+mijiaAPI --run Bật đèn bàn và điều chỉnh độ sáng tối đa --quiet
 ```
 
-## 致谢
+## Lời cảm ơn
 
 * [janzlan/mijia-api](https://gitee.com/janzlan/mijia-api/tree/master)
 
-## 开源许可
+## Giấy phép mã nguồn mở
 
-本项目采用 [GPL-3.0](LICENSE) 开源许可证。
+Dự án này sử dụng giấy phép mã nguồn mở [GPL-3.0](LICENSE).
 
-## 免责声明
+## Tuyên bố miễn trừ trách nhiệm
 
-* 本项目仅供学习交流使用，不得用于商业用途，如有侵权请联系删除
-* 用户使用本项目所产生的任何后果，需自行承担风险
-* 开发者不对使用本项目产生的任何直接或间接损失负责
+* Dự án này chỉ dành cho mục đích học tập và trao đổi, không được sử dụng cho mục đích thương mại, nếu có vi phạm bản quyền vui lòng liên hệ để xóa
+* Người dùng phải tự chịu trách nhiệm về mọi hậu quả phát sinh từ việc sử dụng dự án này
+* Nhà phát triển không chịu trách nhiệm về bất kỳ thiệt hại trực tiếp hoặc gián tiếp nào phát sinh từ việc sử dụng dự án này

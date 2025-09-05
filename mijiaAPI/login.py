@@ -20,11 +20,11 @@ logger = get_logger(__name__)
 class LoginError(Exception):
     def __init__(self, code: int, message: str):
         """
-        初始化登录错误异常。
+        Khởi tạo ngoại lệ lỗi đăng nhập.
 
         Args:
-            code (int): 错误代码。
-            message (str): 错误消息。
+            code (int): Mã lỗi.
+            message (str): Thông báo lỗi.
         """
         self.code = code
         self.message = message
@@ -34,10 +34,10 @@ class LoginError(Exception):
 class mijiaLogin(object):
     def __init__(self, save_path: Optional[str] = None):
         """
-        初始化米家登录对象。
+        Khởi tạo đối tượng đăng nhập Mijia.
 
         Args:
-            save_path (str, optional): 认证数据保存路径。默认为None。
+            save_path (str, optional): Đường dẫn lưu dữ liệu xác thực. Mặc định là None.
         """
         self.auth_data = None
         self.save_path = save_path

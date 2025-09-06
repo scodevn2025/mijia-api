@@ -22,7 +22,7 @@ pip install mijiaAPI
 ### Cài từ mã nguồn
 
 ```bash
-git clone https://github.com/Do1e/mijia-api.git
+git clone https://github.com/scodevn2025/mijia-api.git
 cd mijia-api
 pip install .
 # hoặc `pip install -e .` để cài dạng editable
